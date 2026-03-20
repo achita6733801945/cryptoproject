@@ -1,0 +1,15 @@
+yaml
+pages:
+  stage: deploy
+  script:
+    - mkdir -p public
+    - cp index.html public/ || true
+    - cp style.css public/ || true
+    - cp script.js public/ || true
+    - cp send.html public/ || true
+    - cp history.html public/ || true
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
