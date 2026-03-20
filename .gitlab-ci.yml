@@ -3,11 +3,9 @@ pages:
   image: alpine:latest
   script:
     - mkdir -p public
-    - cp -r index.html public/ || true
-    - cp -r style.css public/ || true
-    - cp -r script.js public/ || true
-    - cp -r send.html public/ || true
-    - cp -r history.html public/ || true
+    - cp *.html public/ || true
+    - cp *.css public/ || true
+    - cp *.js public/ || true
   artifacts:
     paths:
       - public
