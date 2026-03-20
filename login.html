@@ -3,629 +3,327 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NexVault — Login</title>
+<title>NexVault — Sign In</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Plus Jakarta Sans',sans-serif}
 :root{
-  --bg:#07090f;
-  --bg2:#0d1017;
-  --bg3:#131820;
-  --bg4:#1a2030;
-  --border:rgba(255,255,255,0.06);
-  --border2:rgba(255,255,255,0.12);
-  --accent:#c8ff57;
-  --accent-dim:rgba(200,255,87,0.1);
-  --text:#e8eaf0;
-  --text2:#7a8394;
-  --text3:#3d4553;
-  --up:#4cff9f;
-  --down:#ff5c5c;
-  --num:'Geist Mono',monospace;
-  --body:'Plus Jakarta Sans',sans-serif;
+  --bg:#07090f;--bg2:#0d1017;--bg3:#131820;--bg4:#1a2030;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);
+  --accent:#c8ff57;--text:#e8eaf0;--text2:#7a8394;--text3:#3d4553;
+  --up:#4cff9f;--down:#ff5c5c;--num:'Geist Mono',monospace;
 }
-body{
-  background:var(--bg);color:var(--text);
-  font-family:var(--body);min-height:100vh;
-  display:flex;overflow:hidden;
-}
-body::before{
-  content:'';position:fixed;inset:0;
-  background-image:
-    linear-gradient(rgba(200,255,87,0.025) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(200,255,87,0.025) 1px,transparent 1px);
-  background-size:80px 80px;pointer-events:none;z-index:0
-}
-.glow-orb{position:fixed;pointer-events:none;z-index:0;border-radius:50%;filter:blur(90px)}
-.glow-1{width:600px;height:600px;background:radial-gradient(circle,rgba(200,255,87,0.07) 0%,transparent 70%);top:-120px;right:-120px}
-.glow-2{width:400px;height:400px;background:radial-gradient(circle,rgba(87,200,255,0.05) 0%,transparent 70%);bottom:-80px;left:-60px}
+body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(200,255,87,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(200,255,87,0.025) 1px,transparent 1px);background-size:80px 80px;pointer-events:none;z-index:0}
+.glow{position:fixed;pointer-events:none;z-index:0;border-radius:50%;filter:blur(90px)}
+.g1{width:600px;height:600px;background:radial-gradient(circle,rgba(200,255,87,0.07) 0%,transparent 70%);top:-150px;right:-100px}
+.g2{width:400px;height:400px;background:radial-gradient(circle,rgba(87,200,255,0.05) 0%,transparent 70%);bottom:-100px;left:-80px}
 
-/* ── LEFT PANEL ── */
-.left{
-  flex:1;display:flex;flex-direction:column;justify-content:space-between;
-  padding:48px;position:relative;z-index:1;
-  border-right:1px solid var(--border);min-height:100vh;
-}
-.logo{font-family:var(--body);font-weight:800;font-size:22px;color:var(--accent);letter-spacing:-0.02em}
+/* LEFT */
+.left{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:48px;position:relative;z-index:1;border-right:1px solid var(--border);min-height:100vh}
+.logo{font-weight:800;font-size:22px;color:var(--accent);letter-spacing:-0.02em}
 .logo span{color:var(--text2);font-weight:400}
-.left-hero{margin:auto 0}
-.eyebrow{
-  display:inline-flex;align-items:center;gap:8px;
-  font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
-  color:var(--accent);margin-bottom:24px;
-}
-.eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--accent);opacity:0.5}
-.left-title{
-  font-size:clamp(32px,4vw,52px);font-weight:800;
-  line-height:1.1;letter-spacing:-0.03em;margin-bottom:20px;
-}
+.hero{margin:auto 0}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:24px}
+.eyebrow::before{content:'';width:24px;height:1px;background:var(--accent);opacity:0.5;display:block}
+.h1{font-size:clamp(32px,4vw,52px);font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin-bottom:20px}
 .hl{background:linear-gradient(135deg,#fff 20%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.left-sub{font-size:15px;color:var(--text2);line-height:1.6;max-width:380px;margin-bottom:40px}
-.stats-row{display:flex;gap:32px}
-.stat-item{border-left:2px solid var(--border2);padding-left:16px}
-.stat-val{font-family:var(--num);font-size:22px;font-weight:700;letter-spacing:-0.02em}
-.stat-lbl{font-size:12px;color:var(--text2);margin-top:3px;font-weight:500}
+.sub{font-size:15px;color:var(--text2);line-height:1.6;max-width:380px;margin-bottom:40px}
+.stats{display:flex;gap:32px}
+.si{border-left:2px solid var(--border2);padding-left:16px}
+.sv{font-family:var(--num);font-size:22px;font-weight:700;letter-spacing:-0.02em}
+.sl{font-size:12px;color:var(--text2);margin-top:3px;font-weight:500}
 .ticker-wrap{overflow:hidden;border-top:1px solid var(--border);padding-top:24px}
-.ticker-track{display:flex;gap:12px;width:max-content;animation:ticker-move 28s linear infinite}
-.ticker-pill{
-  display:flex;align-items:center;gap:8px;
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:8px;padding:8px 14px;white-space:nowrap;flex-shrink:0;
-}
-.t-sym{font-family:var(--num);font-size:12px;font-weight:600}
-.t-price{font-family:var(--num);font-size:12px;color:var(--text2)}
-.t-chg{font-family:var(--num);font-size:11px;font-weight:600}
-.t-chg.up{color:var(--up)}.t-chg.down{color:var(--down)}
-@keyframes ticker-move{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-track{display:flex;gap:12px;width:max-content;animation:tick 28s linear infinite}
+.tp{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;white-space:nowrap}
+.ts{font-family:var(--num);font-size:12px;font-weight:600}
+.tpr{font-family:var(--num);font-size:12px;color:var(--text2)}
+.tc{font-family:var(--num);font-size:11px;font-weight:600}
+.tc.u{color:var(--up)}.tc.d{color:var(--down)}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-/* ── RIGHT PANEL ── */
-.right{
-  width:480px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  padding:48px 44px;position:relative;z-index:1;
-  background:rgba(13,16,23,0.6);backdrop-filter:blur(24px);
-}
-
-/* ── SCREENS ── */
+/* RIGHT */
+.right{width:480px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:48px 44px;position:relative;z-index:1;background:rgba(13,16,23,0.6);backdrop-filter:blur(24px)}
 .screen{display:none;width:100%;max-width:360px}
 .screen.active{display:block;animation:fadeUp 0.4s ease forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── COMMON FORM STYLES ── */
-.form-title{font-size:26px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px}
-.form-sub{font-size:14px;color:var(--text2);margin-bottom:32px;font-weight:400;line-height:1.5}
-.form-sub a{color:var(--accent);text-decoration:none;font-weight:600}
-.form-sub a:hover{text-decoration:underline}
+/* FORM */
+.ftitle{font-size:26px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px}
+.fsub{font-size:14px;color:var(--text2);margin-bottom:28px;line-height:1.5}
+.fsub a{color:var(--accent);text-decoration:none;font-weight:600;cursor:pointer}
+.fsub a:hover{text-decoration:underline}
+.field{margin-bottom:14px}
+.flbl{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:7px;display:block}
+.fw{position:relative}
+.fi{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px 16px;font-size:14px;font-weight:500;color:var(--text);outline:none;transition:all 0.2s}
+.fi::placeholder{color:var(--text3)}
+.fi:focus{border-color:rgba(200,255,87,0.4);background:rgba(200,255,87,0.02);box-shadow:0 0 0 3px rgba(200,255,87,0.06)}
+.fi.ic{padding-left:42px}
+.fic{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none;transition:color 0.2s}
+.fw:focus-within .fic{color:var(--accent)}
+.ftg{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:13px;padding:4px;transition:color 0.2s}
+.ftg:hover{color:var(--text)}
+.frow{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.ck{display:flex;align-items:center;gap:8px;cursor:pointer}
+.ckb{width:16px;height:16px;border-radius:4px;border:1px solid var(--border2);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all 0.2s;flex-shrink:0}
+.ckb.on{background:var(--accent);border-color:var(--accent);color:#000}
+.ckl{font-size:13px;color:var(--text2);font-weight:500}
+.flink{font-size:13px;color:var(--accent);font-weight:600;background:none;border:none;cursor:pointer}
+.flink:hover{text-decoration:underline}
+.btn{width:100%;padding:14px;border-radius:10px;background:var(--accent);color:#000;font-size:15px;font-weight:700;border:none;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{background:#d4ff6a;transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,255,87,0.2)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.ghost{background:var(--bg3);color:var(--text2);border:1px solid var(--border2)}
+.btn.ghost:hover{background:var(--bg4);color:var(--text);transform:none;box-shadow:none}
+.err{background:rgba(255,92,92,0.08);border:1px solid rgba(255,92,92,0.2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--down);display:none;align-items:center;gap:8px}
+.err.on{display:flex}
+.ftr{margin-top:24px;padding-top:20px;border-top:1px solid var(--border);text-align:center;font-size:12px;color:var(--text3)}
+.ftr a{color:var(--text2);text-decoration:none}
+.ftr a:hover{color:var(--accent)}
 
-.wallet-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
-.wallet-btn{
-  display:flex;align-items:center;gap:14px;
-  padding:14px 18px;border-radius:12px;
-  border:1px solid var(--border2);background:var(--bg3);
-  cursor:pointer;transition:all 0.2s;width:100%;font-family:var(--body);
-}
-.wallet-btn:hover{border-color:rgba(200,255,87,0.35);background:rgba(200,255,87,0.04);transform:translateY(-1px)}
-.wallet-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.wallet-name{font-size:14px;font-weight:700;color:var(--text);text-align:left}
-.wallet-desc{font-size:11px;color:var(--text2);margin-top:2px;text-align:left}
-.wallet-arrow{color:var(--text3);font-size:14px;transition:all 0.2s;margin-left:auto}
-.wallet-btn:hover .wallet-arrow{transform:translateX(3px);color:var(--accent)}
-
-.divider{display:flex;align-items:center;gap:12px;margin-bottom:24px}
-.divider-line{flex:1;height:1px;background:var(--border2)}
-.divider-text{font-size:12px;color:var(--text3);font-weight:500;white-space:nowrap}
-
-.field{margin-bottom:16px}
-.field-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:7px;display:block}
-.field-wrap{position:relative}
-.field-input{
-  width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
-  padding:12px 16px;font-family:var(--body);font-size:14px;font-weight:500;
-  color:var(--text);outline:none;transition:all 0.2s;
-}
-.field-input::placeholder{color:var(--text3)}
-.field-input:focus{border-color:rgba(200,255,87,0.4);background:rgba(200,255,87,0.02);box-shadow:0 0 0 3px rgba(200,255,87,0.06)}
-.field-input.with-icon{padding-left:42px}
-.field-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none;transition:color 0.2s}
-.field-wrap:focus-within .field-icon{color:var(--accent)}
-.field-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text3);cursor:pointer;font-size:13px;background:none;border:none;transition:color 0.2s;padding:2px 4px}
-.field-toggle:hover{color:var(--text)}
-
-.options-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-.check-wrap{display:flex;align-items:center;gap:8px;cursor:pointer}
-.check-box{
-  width:16px;height:16px;border-radius:4px;border:1px solid var(--border2);
-  background:var(--bg3);display:flex;align-items:center;justify-content:center;
-  transition:all 0.2s;flex-shrink:0;cursor:pointer;font-size:10px;
-}
-.check-box.on{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
-.check-label{font-size:13px;color:var(--text2);font-weight:500}
-.forgot-link{font-size:13px;color:var(--accent);text-decoration:none;font-weight:600}
-.forgot-link:hover{text-decoration:underline}
-
-.submit-btn{
-  width:100%;padding:14px;border-radius:10px;
-  background:var(--accent);color:#000;
-  font-family:var(--body);font-size:15px;font-weight:700;
-  border:none;cursor:pointer;transition:all 0.25s;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-}
-.submit-btn:hover{background:#d4ff6a;transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,255,87,0.2)}
-.submit-btn:active{transform:translateY(0)}
-.submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
-
-.error-msg{
-  background:rgba(255,92,92,0.08);border:1px solid rgba(255,92,92,0.2);
-  border-radius:8px;padding:10px 14px;margin-bottom:16px;
-  font-size:13px;color:var(--down);display:none;align-items:center;gap:8px;
-}
-.error-msg.show{display:flex}
-
-.notice{
-  display:flex;align-items:flex-start;gap:10px;
-  background:var(--bg4);border:1px solid var(--border);
-  border-radius:8px;padding:12px 14px;margin-top:16px;
-}
-.notice-icon{font-size:15px;flex-shrink:0;margin-top:1px}
-.notice-text{font-size:12px;color:var(--text2);line-height:1.5}
-.notice-text strong{color:var(--text);font-weight:600}
-
-.form-footer{margin-top:28px;padding-top:20px;border-top:1px solid var(--border);text-align:center;font-size:12px;color:var(--text3)}
-.form-footer a{color:var(--text2);text-decoration:none}
-.form-footer a:hover{color:var(--accent)}
-
-/* ── STEP INDICATOR ── */
+/* STEPS */
 .steps{display:flex;align-items:center;gap:6px;margin-bottom:28px}
-.step-dot{
-  width:8px;height:8px;border-radius:50%;
-  background:var(--bg4);border:1px solid var(--border2);
-  transition:all 0.3s;
-}
-.step-dot.done{background:rgba(200,255,87,0.4);border-color:rgba(200,255,87,0.4)}
-.step-dot.active{background:var(--accent);border-color:var(--accent);width:24px;border-radius:4px}
-.step-label{font-size:11px;color:var(--text3);margin-left:8px;font-weight:500}
+.sdot{width:8px;height:8px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);transition:all 0.3s}
+.sdot.done{background:rgba(200,255,87,0.4);border-color:rgba(200,255,87,0.4)}
+.sdot.active{background:var(--accent);border-color:var(--accent);width:24px;border-radius:4px}
+.slabel{font-size:11px;color:var(--text3);margin-left:8px;font-weight:500}
 
-/* ── PIN PAD ── */
-.pin-display{
-  display:flex;justify-content:center;gap:12px;margin-bottom:32px;
-}
-.pin-dot{
-  width:18px;height:18px;border-radius:50%;
-  border:2px solid var(--border2);background:transparent;
-  transition:all 0.25s;position:relative;overflow:hidden;
-}
-.pin-dot.filled{background:var(--accent);border-color:var(--accent);transform:scale(1.1)}
-.pin-dot.error{background:var(--down);border-color:var(--down);animation:shake 0.4s ease}
-.pin-dot.success{background:var(--up);border-color:var(--up)}
+/* PIN */
+.pin-dots{display:flex;justify-content:center;gap:14px;margin-bottom:28px}
+.pd{width:20px;height:20px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:all 0.2s}
+.pd.f{background:var(--accent);border-color:var(--accent);transform:scale(1.08)}
+.pd.e{background:var(--down);border-color:var(--down);animation:shake 0.4s ease}
+.pd.ok{background:var(--up);border-color:var(--up)}
+.ph{text-align:center;font-size:13px;color:var(--text2);font-weight:500;margin-bottom:24px;min-height:20px}
+.ph.warn{color:#fbbf24}.ph.good{color:var(--up)}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:280px;margin:0 auto 20px}
+.nk{aspect-ratio:1;border-radius:14px;border:1px solid var(--border2);background:var(--bg3);font-family:var(--num);font-size:22px;font-weight:600;color:var(--text);cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.nk:hover{background:var(--bg4);border-color:rgba(200,255,87,0.3);color:var(--accent)}
+.nk:active{transform:scale(0.92)}
+.nk.del{font-size:18px;color:var(--text2)}.nk.del:hover{color:var(--down)}
+.nk.emp{background:transparent;border:none;pointer-events:none}
+.nsub{font-size:8px;letter-spacing:0.1em;color:var(--text3);font-weight:600;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif}
+.sw{max-width:280px;margin:0 auto 12px}
+.sbars{display:flex;gap:4px;margin-bottom:5px}
+.sb{flex:1;height:3px;border-radius:2px;background:var(--bg4);transition:background 0.3s}
+.sb.w{background:#ff5c5c}.sb.m{background:#fbbf24}.sb.s{background:var(--up)}
+.slbl2{font-size:11px;color:var(--text3)}
 
-.pin-hint{text-align:center;font-size:13px;color:var(--text2);margin-bottom:24px;font-weight:500;min-height:20px;transition:all 0.2s}
-.pin-hint.warn{color:#fbbf24}
-.pin-hint.ok{color:var(--up)}
-
-.numpad{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:10px;max-width:280px;margin:0 auto;
-}
-.num-btn{
-  aspect-ratio:1;border-radius:14px;border:1px solid var(--border2);
-  background:var(--bg3);font-family:var(--num);font-size:22px;font-weight:600;
-  color:var(--text);cursor:pointer;transition:all 0.15s;
-  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;
-}
-.num-btn:hover{background:var(--bg4);border-color:rgba(200,255,87,0.3);color:var(--accent)}
-.num-btn:active{transform:scale(0.93);background:rgba(200,255,87,0.08)}
-.num-btn.del{font-size:18px;color:var(--text2)}
-.num-btn.del:hover{color:var(--down);border-color:rgba(255,92,92,0.3)}
-.num-btn.empty{pointer-events:none;opacity:0;border:none;background:transparent}
-.num-sub{font-family:var(--body);font-size:8px;letter-spacing:0.1em;color:var(--text3);font-weight:600;text-transform:uppercase}
-
-.pin-strength{margin:16px auto 0;max-width:280px}
-.pin-strength-bar{display:flex;gap:4px;margin-bottom:6px}
-.pin-bar{flex:1;height:3px;border-radius:2px;background:var(--bg4);transition:background 0.3s}
-.pin-bar.weak{background:#ff5c5c}
-.pin-bar.fair{background:#fbbf24}
-.pin-bar.strong{background:var(--up)}
-.pin-strength-label{font-size:11px;color:var(--text3);font-weight:500}
-
-/* ── SUCCESS SCREEN ── */
-.success-icon{
-  width:64px;height:64px;border-radius:50%;
-  background:rgba(76,255,159,0.1);border:1px solid rgba(76,255,159,0.3);
-  display:flex;align-items:center;justify-content:center;
-  font-size:28px;margin:0 auto 24px;
-  animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
-}
-@keyframes popIn{from{opacity:0;transform:scale(0.5)}to{opacity:1;transform:scale(1)}}
-.success-title{font-size:24px;font-weight:800;text-align:center;margin-bottom:10px}
-.success-sub{font-size:14px;color:var(--text2);text-align:center;line-height:1.6;margin-bottom:32px}
-.success-features{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
-.feature-row{
-  display:flex;align-items:center;gap:12px;
-  padding:12px 16px;border-radius:10px;
-  background:var(--bg3);border:1px solid var(--border);
-}
-.feature-icon{font-size:18px;flex-shrink:0}
-.feature-text{font-size:13px;font-weight:500;color:var(--text2)}
-.feature-text strong{color:var(--text);display:block;font-weight:600;font-size:14px}
-
-/* ANIMATIONS */
-@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
-@keyframes pulse-green{0%,100%{box-shadow:0 0 0 0 rgba(76,255,159,0.4)}50%{box-shadow:0 0 0 8px rgba(76,255,159,0)}}
-
-@media(max-width:900px){.left{display:none}.right{width:100%;padding:32px 24px}}
+/* SUCCESS */
+.suc-icon{width:64px;height:64px;border-radius:50%;background:rgba(76,255,159,0.1);border:1px solid rgba(76,255,159,0.3);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 20px;animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes popIn{from{opacity:0;transform:scale(0.4)}to{opacity:1;transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media(max-width:860px){.left{display:none}.right{width:100%;padding:32px 24px}}
 </style>
 </head>
 <body>
+<div class="glow g1"></div><div class="glow g2"></div>
 
-<div class="glow-orb glow-1"></div>
-<div class="glow-orb glow-2"></div>
-
-<!-- ═══ LEFT PANEL ═══ -->
+<!-- LEFT PANEL -->
 <div class="left">
   <div class="logo">Nex<span>Vault</span></div>
-
-  <div class="left-hero">
+  <div class="hero">
     <div class="eyebrow">Decentralized Finance</div>
-    <div class="left-title">
-      Your Assets.<br>
-      <span class="hl">Always Secure.</span>
-    </div>
-    <div class="left-sub">
-      Track real-time prices, manage your portfolio, and swap crypto — all in one place. No middlemen, no compromise.
-    </div>
-    <div class="stats-row">
-      <div class="stat-item">
-        <div class="stat-val">$2.41T</div>
-        <div class="stat-lbl">Market Cap</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-val">9,842</div>
-        <div class="stat-lbl">Active Coins</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-val" style="color:var(--up)">▲ 2.3%</div>
-        <div class="stat-lbl">24h Change</div>
-      </div>
+    <div class="h1">Your Assets.<br><span class="hl">Always Secure.</span></div>
+    <div class="sub">Track real-time prices, manage your portfolio, and swap crypto — all in one place.</div>
+    <div class="stats">
+      <div class="si"><div class="sv">$2.41T</div><div class="sl">Market Cap</div></div>
+      <div class="si"><div class="sv">9,842</div><div class="sl">Active Coins</div></div>
+      <div class="si"><div class="sv" style="color:var(--up)">▲ 2.3%</div><div class="sl">24h Change</div></div>
     </div>
   </div>
-
-  <div class="ticker-wrap">
-    <div class="ticker-track" id="ticker"></div>
-  </div>
+  <div class="ticker-wrap"><div class="ticker-track" id="ticker"></div></div>
 </div>
 
-<!-- ═══ RIGHT PANEL ═══ -->
+<!-- RIGHT PANEL -->
 <div class="right">
 
-  <!-- ── SCREEN 1: LOGIN ── -->
-  <div class="screen active" id="screen-login">
-    <div class="form-title">Welcome back</div>
-    <div class="form-sub">No account? <a href="#" onclick="goTo('screen-register')">Create one free →</a></div>
-
-    <div class="wallet-btns">
-      <button class="wallet-btn" onclick="handleWallet('MetaMask')">
-        <div class="wallet-icon" style="background:rgba(247,147,26,0.15)">🦊</div>
-        <div style="flex:1">
-          <div class="wallet-name">MetaMask</div>
-          <div class="wallet-desc">Connect with browser extension</div>
-        </div>
-        <div class="wallet-arrow">→</div>
-      </button>
-      <button class="wallet-btn" onclick="handleWallet('WalletConnect')">
-        <div class="wallet-icon" style="background:rgba(87,158,255,0.15)">🔗</div>
-        <div style="flex:1">
-          <div class="wallet-name">WalletConnect</div>
-          <div class="wallet-desc">Scan QR with mobile wallet</div>
-        </div>
-        <div class="wallet-arrow">→</div>
-      </button>
+  <!-- ① LOGIN -->
+  <div class="screen active" id="s-login">
+    <div class="ftitle">Welcome back</div>
+    <div class="fsub">No account? <a onclick="go('s-register')">Create one free →</a></div>
+    <div class="err" id="lerr"><span>⚠</span><span id="lerr-t"></span></div>
+    <div class="field"><label class="flbl">Email</label>
+      <div class="fw"><span class="fic">✉</span><input id="l-em" type="email" class="fi ic" placeholder="you@example.com"></div>
     </div>
-
-    <div class="divider">
-      <div class="divider-line"></div>
-      <div class="divider-text">or sign in with email</div>
-      <div class="divider-line"></div>
+    <div class="field"><label class="flbl">Password</label>
+      <div class="fw"><span class="fic">🔒</span><input id="l-pw" type="password" class="fi ic" placeholder="••••••••" style="padding-right:44px"><button class="ftg" onclick="tv('l-pw',this)">👁</button></div>
     </div>
-
-    <div class="error-msg" id="login-error">
-      <span>⚠</span><span id="login-error-text">Invalid credentials. Please try again.</span>
+    <div class="frow">
+      <div class="ck" onclick="tck(this)"><div class="ckb">✓</div><span class="ckl">Remember me</span></div>
+      <button class="flink">Forgot password?</button>
     </div>
-
-    <div class="field">
-      <label class="field-label">Email Address</label>
-      <div class="field-wrap">
-        <span class="field-icon">✉</span>
-        <input id="login-email" type="email" class="field-input with-icon" placeholder="you@example.com">
-      </div>
-    </div>
-    <div class="field">
-      <label class="field-label">Password</label>
-      <div class="field-wrap">
-        <span class="field-icon">🔒</span>
-        <input id="login-pass" type="password" class="field-input with-icon" placeholder="••••••••" style="padding-right:44px">
-        <button class="field-toggle" onclick="togglePass('login-pass',this)">👁</button>
-      </div>
-    </div>
-
-    <div class="options-row">
-      <div class="check-wrap" onclick="toggleCheck(this)">
-        <div class="check-box">✓</div>
-        <span class="check-label">Remember me</span>
-      </div>
-      <a href="#" class="forgot-link">Forgot password?</a>
-    </div>
-
-    <button class="submit-btn" onclick="handleLogin()">Sign In →</button>
-
-    <div class="notice">
-      <span class="notice-icon">🛡</span>
-      <div class="notice-text">
-        <strong>Secure Login</strong>
-        You'll be asked to set a <strong>6-digit PIN</strong> for extra security after sign-in.
-      </div>
-    </div>
-
-    <div class="form-footer">
-      <a href="#">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Terms of Service</a> &nbsp;·&nbsp; <a href="#">Help</a>
-    </div>
+    <button class="btn" onclick="doLogin()">Sign In →</button>
+    <div class="ftr"><a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Help</a></div>
   </div>
 
-  <!-- ── SCREEN 2: SET PIN ── -->
-  <div class="screen" id="screen-setpin">
-    <div class="steps">
-      <div class="step-dot done"></div>
-      <div class="step-dot active"></div>
-      <div class="step-dot"></div>
-      <span class="step-label">Step 2 of 3 — Set PIN</span>
+  <!-- ② REGISTER -->
+  <div class="screen" id="s-register">
+    <div class="ftitle">Create account</div>
+    <div class="fsub">Already registered? <a onclick="go('s-login')">Sign in →</a></div>
+    <div class="err" id="rerr"><span>⚠</span><span id="rerr-t"></span></div>
+    <div class="field"><label class="flbl">Display Name</label>
+      <div class="fw"><span class="fic">👤</span><input id="r-nm" type="text" class="fi ic" placeholder="e.g. Alex Trader"></div>
     </div>
+    <div class="field"><label class="flbl">Email</label>
+      <div class="fw"><span class="fic">✉</span><input id="r-em" type="email" class="fi ic" placeholder="you@example.com"></div>
+    </div>
+    <div class="field"><label class="flbl">Password</label>
+      <div class="fw"><span class="fic">🔒</span><input id="r-pw" type="password" class="fi ic" placeholder="Min. 8 characters" style="padding-right:44px"><button class="ftg" onclick="tv('r-pw',this)">👁</button></div>
+    </div>
+    <div class="field" style="margin-bottom:20px"><label class="flbl">Confirm Password</label>
+      <div class="fw"><span class="fic">🔒</span><input id="r-pw2" type="password" class="fi ic" placeholder="Repeat password" style="padding-right:44px"><button class="ftg" onclick="tv('r-pw2',this)">👁</button></div>
+    </div>
+    <button class="btn" onclick="doReg()">Create Account →</button>
+    <div class="ftr" style="margin-top:20px"><a href="#">Privacy</a> · <a href="#">Terms</a></div>
+  </div>
 
-    <div class="form-title">Set your PIN</div>
-    <div class="form-sub">This 6-digit PIN will be required every time you open NexVault.</div>
-
-    <div class="pin-display" id="set-dots"></div>
-    <div class="pin-hint" id="set-hint">Enter 6 digits</div>
-
+  <!-- ③ SET PIN -->
+  <div class="screen" id="s-setpin">
+    <div class="steps"><div class="sdot done"></div><div class="sdot active"></div><div class="sdot"></div><span class="slabel">Step 2 of 3 — Set PIN</span></div>
+    <div class="ftitle">Set your PIN</div>
+    <div class="fsub">6-digit PIN required to confirm every transaction.</div>
+    <div class="pin-dots" id="set-dots"></div>
+    <div class="ph" id="set-hint">Enter 6 digits</div>
     <div class="numpad" id="set-pad"></div>
-
-    <div class="pin-strength" id="pin-strength-wrap" style="display:none">
-      <div class="pin-strength-bar" id="pin-bars"></div>
-      <div class="pin-strength-label" id="pin-strength-label"></div>
-    </div>
-
-    <div class="notice" style="margin-top:20px">
-      <span class="notice-icon">💡</span>
-      <div class="notice-text">Avoid easy PINs like <strong>123456</strong> or repeated digits. Your PIN is never stored on our servers.</div>
-    </div>
+    <div class="sw" id="sw" style="display:none"><div class="sbars" id="sbars"></div><div class="slbl2" id="slbl"></div></div>
   </div>
 
-  <!-- ── SCREEN 3: CONFIRM PIN ── -->
-  <div class="screen" id="screen-confirmpin">
-    <div class="steps">
-      <div class="step-dot done"></div>
-      <div class="step-dot done"></div>
-      <div class="step-dot active"></div>
-      <span class="step-label">Step 3 of 3 — Confirm PIN</span>
-    </div>
-
-    <div class="form-title">Confirm PIN</div>
-    <div class="form-sub">Re-enter your 6-digit PIN to confirm.</div>
-
-    <div class="pin-display" id="confirm-dots"></div>
-    <div class="pin-hint" id="confirm-hint">Re-enter your PIN</div>
-
-    <div class="numpad" id="confirm-pad"></div>
-
-    <button class="submit-btn" id="confirm-back-btn" onclick="goTo('screen-setpin')" style="margin-top:16px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2)">← Change PIN</button>
+  <!-- ④ CONFIRM PIN -->
+  <div class="screen" id="s-conf">
+    <div class="steps"><div class="sdot done"></div><div class="sdot done"></div><div class="sdot active"></div><span class="slabel">Step 3 of 3 — Confirm PIN</span></div>
+    <div class="ftitle">Confirm PIN</div>
+    <div class="fsub">Re-enter your 6-digit PIN to confirm.</div>
+    <div class="pin-dots" id="conf-dots"></div>
+    <div class="ph" id="conf-hint">Re-enter your PIN</div>
+    <div class="numpad" id="conf-pad"></div>
+    <button class="btn ghost" style="margin-top:8px" onclick="go('s-setpin');initPad('set-pad','set-dots','set-hint','set',onSetDone)">← Change PIN</button>
   </div>
 
-  <!-- ── SCREEN 4: SUCCESS ── -->
-  <div class="screen" id="screen-success">
-    <div class="success-icon">✓</div>
-    <div class="success-title">You're all set!</div>
-    <div class="success-sub">Your account is secured with a PIN. You're ready to start trading.</div>
-    <div class="success-features">
-      <div class="feature-row">
-        <div class="feature-icon">🛡</div>
-        <div class="feature-text"><strong>PIN Protection Active</strong>Required on every login</div>
-      </div>
-      <div class="feature-row">
-        <div class="feature-icon">📈</div>
-        <div class="feature-text"><strong>Real-Time Prices</strong>20+ coins tracked live</div>
-      </div>
-      <div class="feature-row">
-        <div class="feature-icon">💼</div>
-        <div class="feature-text"><strong>Portfolio Ready</strong>Add your holdings now</div>
-      </div>
-    </div>
-    <button class="submit-btn" onclick="window.location.href='crypto-dashboard.html'">Go to Dashboard →</button>
+  <!-- ⑤ SUCCESS -->
+  <div class="screen" id="s-ok">
+    <div class="suc-icon">✓</div>
+    <div class="ftitle" style="text-align:center;margin-bottom:8px">You're all set!</div>
+    <div class="fsub" style="text-align:center;margin-bottom:28px">Account secured with PIN. Ready to start trading.</div>
+    <button class="btn" onclick="window.location.href='crypto-dashboard.html'">Go to Dashboard →</button>
   </div>
 
-</div><!-- .right -->
+</div>
 
 <script>
-// ── TICKER ──
-const TICKS=[
-  {s:'BTC',p:'$67,245',c:'+2.1%',up:true},{s:'ETH',p:'$3,420',c:'+3.4%',up:true},
-  {s:'SOL',p:'$145',c:'+5.2%',up:true},{s:'BNB',p:'$412',c:'-0.8%',up:false},
-  {s:'XRP',p:'$0.62',c:'+1.3%',up:true},{s:'DOGE',p:'$0.18',c:'-1.2%',up:false},
-  {s:'ADA',p:'$0.58',c:'+0.9%',up:true},{s:'AVAX',p:'$38.40',c:'+4.1%',up:true},
-];
-const t=document.getElementById('ticker');
-const pills=[...TICKS,...TICKS].map(d=>`
-  <div class="ticker-pill">
-    <span class="t-sym">${d.s}</span>
-    <span class="t-price">${d.p}</span>
-    <span class="t-chg ${d.up?'up':'down'}">${d.c}</span>
-  </div>`).join('');
-t.innerHTML=pills;
+// TICKER
+const TD=[{s:'BTC',p:'$67,245',c:'+2.1%',u:1},{s:'ETH',p:'$3,420',c:'+3.4%',u:1},{s:'SOL',p:'$145',c:'+5.2%',u:1},{s:'BNB',p:'$412',c:'-0.8%',u:0},{s:'XRP',p:'$0.62',c:'+1.3%',u:1},{s:'DOGE',p:'$0.18',c:'-1.2%',u:0},{s:'ADA',p:'$0.58',c:'+0.9%',u:1},{s:'AVAX',p:'$38.40',c:'+4.1%',u:1}];
+document.getElementById('ticker').innerHTML=[...TD,...TD].map(d=>`<div class="tp"><span class="ts">${d.s}</span><span class="tpr">${d.p}</span><span class="tc ${d.u?'u':'d'}">${d.c}</span></div>`).join('');
 
-// ── SCREEN NAV ──
-function goTo(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function tv(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'👁':'🙈'}
+function tck(el){el.querySelector('.ckb').classList.toggle('on')}
+function showErr(id,txt){const el=document.getElementById(id);el.querySelector('span:last-child').textContent=txt;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),3500)}
+
+// LOGIN
+function doLogin(){
+  const em=document.getElementById('l-em').value.trim();
+  const pw=document.getElementById('l-pw').value;
+  if(!em||!pw){showErr('lerr','Please fill in all fields.');return}
+  const users=JSON.parse(localStorage.getItem('nv_users')||'{}');
+  const u=users[em];
+  if(!u||u.pass!==btoa(pw)){showErr('lerr','Email or password is incorrect.');return}
+  localStorage.setItem('nv_session',JSON.stringify({email:em,name:u.name,loggedIn:true}));
+  window.location.href='crypto-dashboard.html';
 }
 
-// ── LOGIN ──
-function handleLogin(){
-  const email=document.getElementById('login-email').value.trim();
-  const pass=document.getElementById('login-pass').value;
-  const err=document.getElementById('login-error');
-  if(!email||!pass){
-    document.getElementById('login-error-text').textContent='Please fill in all fields.';
-    err.classList.add('show'); return;
-  }
-  err.classList.remove('show');
-  const btn=document.querySelector('#screen-login .submit-btn');
-  btn.textContent='Signing in...'; btn.disabled=true;
-  setTimeout(()=>{
-    btn.textContent='Sign In →'; btn.disabled=false;
-    goTo('screen-setpin');
-    initNumpad('set-pad','set-dots','set-hint',6,'set',onSetComplete);
-  },900);
+// REGISTER
+function doReg(){
+  const nm=document.getElementById('r-nm').value.trim();
+  const em=document.getElementById('r-em').value.trim();
+  const pw=document.getElementById('r-pw').value;
+  const pw2=document.getElementById('r-pw2').value;
+  if(!nm||!em||!pw||!pw2){showErr('rerr','Please fill in all fields.');return}
+  if(pw.length<8){showErr('rerr','Password must be at least 8 characters.');return}
+  if(pw!==pw2){showErr('rerr','Passwords do not match.');return}
+  const users=JSON.parse(localStorage.getItem('nv_users')||'{}');
+  if(users[em]){showErr('rerr','An account with this email already exists.');return}
+  users[em]={name:nm,pass:btoa(pw),pin:null};
+  localStorage.setItem('nv_users',JSON.stringify(users));
+  localStorage.setItem('nv_session',JSON.stringify({email:em,name:nm,loggedIn:false}));
+  go('s-setpin');
+  initPad('set-pad','set-dots','set-hint','set',onSetDone);
 }
 
-function handleWallet(name){
-  const btn=document.querySelector('#screen-login .submit-btn');
-  btn.textContent=`Connecting ${name}...`; btn.disabled=true;
-  setTimeout(()=>{
-    btn.textContent='Sign In →'; btn.disabled=false;
-    goTo('screen-setpin');
-    initNumpad('set-pad','set-dots','set-hint',6,'set',onSetComplete);
-  },1200);
-}
-
-// ── TOGGLE ──
-function togglePass(id,btn){
-  const inp=document.getElementById(id);
-  inp.type=inp.type==='password'?'text':'password';
-  btn.textContent=inp.type==='password'?'👁':'🙈';
-}
-function toggleCheck(wrap){
-  wrap.querySelector('.check-box').classList.toggle('on');
-}
-
-// ── NUMPAD ──
+// PIN ENGINE
+let savedPin='';
 const KEYS=['1','2ABC','3DEF','4GHI','5JKL','6MNO','7PQRS','8TUV','9WXYZ','','0','⌫'];
 
-function initNumpad(padId,dotsId,hintId,len,prefix,onComplete){
+function initPad(padId,dotsId,hintId,prefix,onDone){
   let pin='';
   const pad=document.getElementById(padId);
   const dots=document.getElementById(dotsId);
   const hint=document.getElementById(hintId);
+  dots.innerHTML=Array.from({length:6},()=>'<div class="pd"></div>').join('');
 
-  // Render dots
-  dots.innerHTML=Array.from({length:len},()=>`<div class="pin-dot"></div>`).join('');
-
-  function updateDots(){
-    dots.querySelectorAll('.pin-dot').forEach((d,i)=>{
-      d.classList.toggle('filled',i<pin.length);
-    });
-  }
-
-  function updateStrength(){
+  function upDots(){dots.querySelectorAll('.pd').forEach((d,i)=>{d.classList.toggle('f',i<pin.length)})}
+  function upStr(){
     if(prefix!=='set')return;
-    const wrap=document.getElementById('pin-strength-wrap');
-    const bars=document.getElementById('pin-bars');
-    const lbl=document.getElementById('pin-strength-label');
-    if(pin.length<6){wrap.style.display='none';return;}
-    wrap.style.display='block';
-    const unique=new Set(pin.split('')).size;
-    const seq=isSequential(pin);
-    const rep=isRepeated(pin);
-    let score=unique>=5&&!seq?2:unique>=3&&!rep?1:0;
-    const colors=['#ff5c5c','#fbbf24','var(--up)'];
-    const labels=['Weak — avoid using this PIN','Fair — could be stronger','Strong — good choice!'];
-    const cls=['weak','fair','strong'];
-    bars.innerHTML=Array.from({length:3},(_,i)=>`<div class="pin-bar ${i<=score?cls[score]:''}" style="${i<=score?'':''}"></div>`).join('');
-    lbl.textContent=labels[score];
-    lbl.style.color=colors[score];
+    const w=document.getElementById('sw'),b=document.getElementById('sbars'),l=document.getElementById('slbl');
+    if(pin.length<6){w.style.display='none';return}
+    w.style.display='block';
+    const uniq=new Set(pin).size;
+    const seq=[...pin].every((_,i,a)=>i===0||Math.abs(+a[i]-+a[i-1])===1);
+    const rep=uniq===1;
+    const sc=rep||seq?0:uniq<=3?1:2;
+    const cls=['w','m','s'],lbs=['Weak — avoid this PIN','Fair — could be stronger','Strong — great choice!'],col=['#ff5c5c','#fbbf24','var(--up)'];
+    b.innerHTML=Array.from({length:3},(_,i)=>`<div class="sb ${i<=sc?cls[sc]:''}"></div>`).join('');
+    l.textContent=lbs[sc];l.style.color=col[sc];
   }
 
-  function isSequential(p){
-    for(let i=0;i<p.length-1;i++)if(Math.abs(+p[i+1]-+p[i])!==1)return false;
-    return true;
-  }
-  function isRepeated(p){return new Set(p.split('')).size===1}
-
-  // Render numpad
   pad.innerHTML=KEYS.map(k=>{
-    if(k==='')return`<div class="num-btn empty"></div>`;
-    if(k==='⌫')return`<button class="num-btn del" onclick="numInput_${prefix}('⌫')">⌫</button>`;
-    const main=k[0];
-    const sub=k.slice(1);
-    return`<button class="num-btn" onclick="numInput_${prefix}('${main}')">
-      ${main}${sub?`<span class="num-sub">${sub}</span>`:''}
-    </button>`;
+    if(!k)return'<div class="nk emp"></div>';
+    if(k==='⌫')return`<button class="nk del" data-k="del">⌫</button>`;
+    const m=k[0],s=k.slice(1);
+    return`<button class="nk" data-k="${m}">${m}${s?`<span class="nsub">${s}</span>`:''}</button>`;
   }).join('');
 
-  // Expose input handler globally
-  window[`numInput_${prefix}`]=function(key){
-    if(key==='⌫'){
-      pin=pin.slice(0,-1);
-      updateDots();
-      hint.textContent=pin.length>0?`${pin.length} of ${len} digits entered`:`Enter ${len} digits`;
-      hint.className='pin-hint';
-      if(prefix==='set')updateStrength();
-      return;
-    }
-    if(pin.length>=len)return;
-    pin+=key;
-    updateDots();
-
-    if(prefix==='set'){
-      hint.textContent=pin.length<len?`${pin.length} of ${len} digits entered`:'PIN set — confirm below';
-      updateStrength();
-    } else {
-      hint.textContent=pin.length<len?`${pin.length} of ${len} entered`:'Confirming...';
-    }
-
-    if(pin.length===len){
-      setTimeout(()=>onComplete(pin,dots,hint,()=>{pin='';updateDots();}),120);
-    }
-  };
+  pad.querySelectorAll('[data-k]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const k=btn.dataset.k;
+      if(k==='del'){pin=pin.slice(0,-1)}
+      else if(pin.length<6){pin+=k}
+      upDots();upStr();
+      hint.className='ph';
+      hint.textContent=pin.length===6?'PIN entered':`${pin.length} of 6 digits`;
+      if(pin.length===6)setTimeout(()=>onDone(pin,dots,hint,()=>{pin='';upDots();hint.textContent=prefix==='set'?'Enter 6 digits':'Re-enter your PIN';hint.className='ph'}),120);
+    });
+  });
 }
 
-let savedPin='';
-
-function onSetComplete(pin,dots,hint,reset){
-  // Validate not too weak (optional, just warn)
-  const unique=new Set(pin.split('')).size;
-  if(unique===1){
-    hint.textContent='PIN too simple — try again';
-    hint.className='pin-hint warn';
-    dots.querySelectorAll('.pin-dot').forEach(d=>d.classList.add('error'));
-    setTimeout(()=>{
-      dots.querySelectorAll('.pin-dot').forEach(d=>{d.classList.remove('error','filled')});
-      hint.textContent='Enter 6 digits';hint.className='pin-hint';
-      reset();
-    },700);
+function onSetDone(pin,dots,hint,reset){
+  if(new Set(pin).size===1){
+    hint.className='ph warn';hint.textContent='PIN too simple — try again';
+    dots.querySelectorAll('.pd').forEach(d=>d.classList.add('e'));
+    setTimeout(()=>{dots.querySelectorAll('.pd').forEach(d=>d.classList.remove('e','f'));reset()},700);
     return;
   }
   savedPin=pin;
-  hint.textContent='✓ PIN recorded';
-  hint.className='pin-hint ok';
-  dots.querySelectorAll('.pin-dot').forEach(d=>d.classList.add('success'));
-  setTimeout(()=>{
-    goTo('screen-confirmpin');
-    initNumpad('confirm-pad','confirm-dots','confirm-hint',6,'confirm',onConfirmComplete);
-  },600);
+  hint.className='ph good';hint.textContent='✓ PIN set';
+  dots.querySelectorAll('.pd').forEach(d=>d.classList.add('ok'));
+  setTimeout(()=>{go('s-conf');initPad('conf-pad','conf-dots','conf-hint','conf',onConfDone)},600);
 }
 
-function onConfirmComplete(pin,dots,hint,reset){
+function onConfDone(pin,dots,hint,reset){
   if(pin===savedPin){
-    hint.textContent='✓ PIN matched!';
-    hint.className='pin-hint ok';
-    dots.querySelectorAll('.pin-dot').forEach(d=>d.classList.add('success'));
-    setTimeout(()=>goTo('screen-success'),700);
+    hint.className='ph good';hint.textContent='✓ Matched!';
+    dots.querySelectorAll('.pd').forEach(d=>d.classList.add('ok'));
+    const sess=JSON.parse(localStorage.getItem('nv_session')||'{}');
+    const users=JSON.parse(localStorage.getItem('nv_users')||'{}');
+    if(sess.email&&users[sess.email]){users[sess.email].pin=btoa(savedPin);localStorage.setItem('nv_users',JSON.stringify(users))}
+    sess.loggedIn=true;localStorage.setItem('nv_session',JSON.stringify(sess));
+    setTimeout(()=>go('s-ok'),600);
   } else {
-    hint.textContent='PIN does not match — try again';
-    hint.className='pin-hint warn';
-    dots.querySelectorAll('.pin-dot').forEach(d=>d.classList.add('error'));
-    setTimeout(()=>{
-      dots.querySelectorAll('.pin-dot').forEach(d=>{d.classList.remove('error','filled')});
-      hint.textContent='Re-enter your PIN';hint.className='pin-hint';
-      reset();
-    },700);
+    hint.className='ph warn';hint.textContent='PIN does not match — try again';
+    dots.querySelectorAll('.pd').forEach(d=>d.classList.add('e'));
+    setTimeout(()=>{dots.querySelectorAll('.pd').forEach(d=>d.classList.remove('e','f'));reset()},700);
   }
 }
 </script>
