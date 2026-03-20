@@ -1,13 +1,13 @@
-yaml
 pages:
   stage: deploy
+  image: alpine:latest
   script:
     - mkdir -p public
-    - cp index.html public/ || true
-    - cp style.css public/ || true
-    - cp script.js public/ || true
-    - cp send.html public/ || true
-    - cp history.html public/ || true
+    - cp -r index.html public/ || true
+    - cp -r style.css public/ || true
+    - cp -r script.js public/ || true
+    - cp -r send.html public/ || true
+    - cp -r history.html public/ || true
   artifacts:
     paths:
       - public
