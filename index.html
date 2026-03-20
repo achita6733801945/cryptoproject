@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NexVault — Crypto Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -26,9 +26,25 @@
   --down:#ff5c5c;
   --up-bg:rgba(76,255,159,0.1);
   --down-bg:rgba(255,92,92,0.1);
+  --num:'Inter',sans-serif;
+  --body:'Plus Jakarta Sans',sans-serif;
+
+  /* NAV TAB COLORS */
+  --tab-market:#60a5fa;
+  --tab-market-bg:rgba(96,165,250,0.12);
+  --tab-watchlist:#f472b6;
+  --tab-watchlist-bg:rgba(244,114,182,0.12);
+  --tab-portfolio:#34d399;
+  --tab-portfolio-bg:rgba(52,211,153,0.12);
+  --tab-news:#fb923c;
+  --tab-news-bg:rgba(251,146,60,0.12);
+  --tab-alerts:#a78bfa;
+  --tab-alerts-bg:rgba(167,139,250,0.12);
+  --tab-convert:#38bdf8;
+  --tab-convert-bg:rgba(56,189,248,0.12);
 }
 html{font-size:14px}
-body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;overflow-x:hidden;min-height:100vh}
+body{background:var(--bg);color:var(--text);font-family:var(--body);overflow-x:hidden;min-height:100vh}
 
 /* GRID BG */
 body::before{
@@ -45,16 +61,22 @@ nav{
   background:rgba(7,9,15,0.85);backdrop-filter:blur(24px);
   border-bottom:1px solid var(--border)
 }
-.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;letter-spacing:-0.02em;color:var(--accent)}
+.nav-logo{font-family:var(--body);font-weight:800;font-size:18px;letter-spacing:-0.02em;color:var(--accent)}
 .nav-logo span{color:var(--text2);font-weight:400}
 .nav-tabs{display:flex;gap:4px}
 .nav-tab{
-  padding:6px 16px;border-radius:6px;font-size:12px;letter-spacing:0.06em;
-  text-transform:uppercase;cursor:pointer;border:none;background:transparent;
-  color:var(--text2);transition:all 0.2s;font-family:'JetBrains Mono',monospace
+  padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;
+  cursor:pointer;border:none;background:transparent;
+  color:var(--text2);transition:all 0.2s;font-family:var(--body);
+  display:flex;align-items:center;gap:6px;letter-spacing:0
 }
-.nav-tab.active,.nav-tab:hover{background:var(--bg3);color:var(--text)}
-.nav-tab.active{color:var(--accent)}
+.nav-tab:hover{background:var(--bg3);color:var(--text)}
+.nav-tab[data-page="market"].active{background:var(--tab-market-bg);color:var(--tab-market);border:1px solid rgba(96,165,250,0.25)}
+.nav-tab[data-page="watchlist"].active{background:var(--tab-watchlist-bg);color:var(--tab-watchlist);border:1px solid rgba(244,114,182,0.25)}
+.nav-tab[data-page="portfolio"].active{background:var(--tab-portfolio-bg);color:var(--tab-portfolio);border:1px solid rgba(52,211,153,0.25)}
+.nav-tab[data-page="news"].active{background:var(--tab-news-bg);color:var(--tab-news);border:1px solid rgba(251,146,60,0.25)}
+.nav-tab[data-page="alerts"].active{background:var(--tab-alerts-bg);color:var(--tab-alerts);border:1px solid rgba(167,139,250,0.25)}
+.nav-tab[data-page="converter"].active{background:var(--tab-convert-bg);color:var(--tab-convert);border:1px solid rgba(56,189,248,0.25)}
 .nav-right{display:flex;align-items:center;gap:12px}
 .live-badge{
   display:flex;align-items:center;gap:6px;padding:5px 12px;
@@ -64,10 +86,9 @@ nav{
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--up);animation:pulse 1.5s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
 .refresh-btn{
-  padding:6px 14px;border-radius:6px;background:var(--accent);color:#000;
-  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;
-  letter-spacing:0.06em;text-transform:uppercase;border:none;cursor:pointer;
-  transition:all 0.2s
+  padding:7px 16px;border-radius:8px;background:var(--accent);color:#000;
+  font-family:var(--body);font-size:13px;font-weight:700;
+  border:none;cursor:pointer;transition:all 0.2s
 }
 .refresh-btn:hover{background:#d4ff6a;transform:translateY(-1px)}
 
@@ -82,7 +103,7 @@ nav{
   position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto
 }
 .sidebar-section{margin-bottom:28px;padding:0 16px}
-.sidebar-label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text3);margin-bottom:12px}
+.sidebar-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;font-weight:600}
 .sidebar-item{
   display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;
   cursor:pointer;transition:all 0.2s;margin-bottom:2px;border:1px solid transparent
@@ -90,7 +111,7 @@ nav{
 .sidebar-item:hover{background:var(--bg3);border-color:var(--border)}
 .sidebar-item.active{background:var(--accent-dim);border-color:rgba(200,255,87,0.2)}
 .sidebar-icon{font-size:15px;width:20px;text-align:center}
-.sidebar-text{font-size:12px;letter-spacing:0.04em;color:var(--text2)}
+.sidebar-text{font-size:13px;font-weight:500;color:var(--text2);font-family:var(--body)}
 .sidebar-item.active .sidebar-text{color:var(--accent)}
 
 /* MAIN */
@@ -113,16 +134,16 @@ nav{
 .gstat:nth-child(2){animation-delay:0.1s}
 .gstat:nth-child(3){animation-delay:0.15s}
 .gstat:nth-child(4){animation-delay:0.2s}
-.gstat-label{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px}
-.gstat-value{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px}
-.gstat-sub{font-size:11px}
+.gstat-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:8px;font-family:var(--body)}
+.gstat-value{font-family:var(--num);font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-0.02em}
+.gstat-sub{font-size:12px;font-family:var(--body);font-weight:500}
 .gstat-sub.up{color:var(--up)}
 .gstat-sub.down{color:var(--down)}
 
 /* SECTION HEADER */
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .section-title{
-  font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+  font-family:var(--body);font-size:15px;font-weight:700;
   display:flex;align-items:center;gap:8px
 }
 .section-title::before{
@@ -130,12 +151,12 @@ nav{
   background:var(--accent);border-radius:2px
 }
 .section-action{
-  font-size:11px;letter-spacing:0.06em;color:var(--text2);
-  cursor:pointer;padding:5px 12px;border-radius:6px;
+  font-size:13px;font-weight:600;color:var(--text2);
+  cursor:pointer;padding:6px 14px;border-radius:8px;
   border:1px solid var(--border);background:transparent;
-  font-family:'JetBrains Mono',monospace;transition:all 0.2s
+  font-family:var(--body);transition:all 0.2s
 }
-.section-action:hover{border-color:var(--border2);color:var(--text)}
+.section-action:hover{border-color:var(--border2);color:var(--text);background:var(--bg3)}
 
 /* COIN TABLE */
 .coin-table-wrap{
@@ -155,25 +176,26 @@ nav{
 }
 .coin-row:last-child{border-bottom:none}
 .coin-row:hover{background:rgba(255,255,255,0.025)}
-.coin-rank{font-size:12px;color:var(--text3);text-align:center}
+.coin-rank{font-size:13px;color:var(--text3);text-align:center;font-family:var(--num);font-weight:500}
 .coin-info{display:flex;align-items:center;gap:12px}
 .coin-logo{
-  width:34px;height:34px;border-radius:50%;
+  width:36px;height:36px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Syne',sans-serif;font-weight:800;font-size:11px;
+  font-family:var(--body);font-weight:800;font-size:11px;
   flex-shrink:0;border:1px solid var(--border2)
 }
 .coin-name-wrap{}
-.coin-symbol{font-weight:600;font-size:13px;letter-spacing:0.04em}
-.coin-name{font-size:11px;color:var(--text2);margin-top:1px}
-.coin-price{font-family:'Syne',sans-serif;font-weight:600;font-size:14px}
+.coin-symbol{font-weight:700;font-size:14px;font-family:var(--body)}
+.coin-name{font-size:12px;color:var(--text2);margin-top:1px;font-family:var(--body)}
+.coin-price{font-family:var(--num);font-weight:600;font-size:15px;letter-spacing:-0.01em}
 .coin-change{
   display:inline-flex;align-items:center;gap:4px;
-  font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px
+  font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;
+  font-family:var(--num)
 }
 .coin-change.up{background:var(--up-bg);color:var(--up)}
 .coin-change.down{background:var(--down-bg);color:var(--down)}
-.coin-cap{font-size:12px;color:var(--text2)}
+.coin-cap{font-size:13px;color:var(--text2);font-family:var(--num);font-weight:500}
 .sparkline-cell{display:flex;align-items:center}
 .sparkline-svg{width:100px;height:36px}
 .coin-vol{font-size:11px;color:var(--text2)}
@@ -199,12 +221,12 @@ nav{
   animation:fadeUp 0.6s ease forwards 0.3s;opacity:0
 }
 .chart-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.chart-panel-title{font-family:'Syne',sans-serif;font-weight:700;font-size:14px}
+.chart-panel-title{font-family:var(--body);font-weight:700;font-size:14px}
 .chart-toggle{display:flex;gap:4px}
 .chart-btn{
-  font-size:10px;padding:4px 10px;border-radius:5px;border:1px solid var(--border);
+  font-size:12px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid var(--border);
   background:transparent;color:var(--text2);cursor:pointer;
-  font-family:'JetBrains Mono',monospace;transition:all 0.15s
+  font-family:var(--body);transition:all 0.15s
 }
 .chart-btn.active{background:var(--accent-dim);border-color:rgba(200,255,87,0.3);color:var(--accent)}
 
@@ -217,10 +239,10 @@ nav{
 .dom-item:last-child{margin-bottom:0}
 .dom-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .dom-info{flex:1}
-.dom-name{font-size:12px;font-weight:600;margin-bottom:3px}
-.dom-bar-wrap{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.dom-name{font-size:13px;font-weight:600;margin-bottom:3px;font-family:var(--body)}
+.dom-bar-wrap{height:5px;background:var(--bg4);border-radius:2px;overflow:hidden}
 .dom-bar{height:100%;border-radius:2px;transition:width 0.8s ease}
-.dom-pct{font-size:12px;font-weight:600;color:var(--text);min-width:40px;text-align:right}
+.dom-pct{font-size:13px;font-weight:700;color:var(--text);min-width:44px;text-align:right;font-family:var(--num)}
 
 /* FEAR GREED */
 .fg-panel{
@@ -239,24 +261,24 @@ nav{
 .converter-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .conv-input{
   flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;
-  padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:14px;
+  padding:11px 14px;font-family:var(--num);font-size:15px;font-weight:500;
   color:var(--text);outline:none;transition:border-color 0.2s;width:100%
 }
 .conv-input:focus{border-color:rgba(200,255,87,0.3)}
 .conv-select{
   background:var(--bg3);border:1px solid var(--border);border-radius:8px;
-  padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:13px;
+  padding:11px 12px;font-family:var(--body);font-size:13px;font-weight:600;
   color:var(--text);outline:none;cursor:pointer;min-width:80px
 }
 .conv-arrow{color:var(--text3);font-size:18px;flex-shrink:0}
 .conv-result{
   background:var(--accent-dim);border:1px solid rgba(200,255,87,0.2);border-radius:8px;
-  padding:14px;text-align:center;margin-top:8px
+  padding:16px;text-align:center;margin-top:8px
 }
 .conv-result-val{
-  font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--accent)
+  font-family:var(--num);font-size:26px;font-weight:700;color:var(--accent);letter-spacing:-0.02em
 }
-.conv-result-sub{font-size:11px;color:var(--text2);margin-top:4px}
+.conv-result-sub{font-size:12px;color:var(--text2);margin-top:4px;font-family:var(--body)}
 
 /* WATCHLIST */
 .watchlist-panel{
@@ -273,11 +295,11 @@ nav{
 .watchlist-item:hover{background:rgba(255,255,255,0.025)}
 .wl-star{color:var(--accent);font-size:14px;margin-right:4px}
 .wl-info{flex:1}
-.wl-name{font-size:13px;font-weight:600}
-.wl-sym{font-size:11px;color:var(--text2)}
+.wl-name{font-size:14px;font-weight:600;font-family:var(--body)}
+.wl-sym{font-size:12px;color:var(--text2);font-family:var(--body)}
 .wl-right{text-align:right}
-.wl-price{font-family:'Syne',sans-serif;font-size:14px;font-weight:600}
-.wl-chg{font-size:11px;margin-top:2px}
+.wl-price{font-family:var(--num);font-size:15px;font-weight:600;letter-spacing:-0.01em}
+.wl-chg{font-size:12px;margin-top:2px;font-family:var(--num);font-weight:600}
 .wl-chg.up{color:var(--up)}
 .wl-chg.down{color:var(--down)}
 .wl-chart{width:80px;height:32px;margin:0 8px}
@@ -288,12 +310,12 @@ nav{
   padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s
 }
 .news-item:hover{border-color:var(--border2)}
-.news-source{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
-.news-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;line-height:1.4;margin-bottom:8px;color:var(--text)}
-.news-meta{display:flex;align-items:center;gap:12px;font-size:11px;color:var(--text2)}
+.news-source{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;font-family:var(--body);font-weight:600}
+.news-title{font-family:var(--body);font-size:15px;font-weight:600;line-height:1.45;margin-bottom:8px;color:var(--text)}
+.news-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text2);font-family:var(--body)}
 .news-tag{
-  padding:2px 8px;border-radius:4px;font-size:10px;letter-spacing:0.06em;
-  text-transform:uppercase;background:var(--bg4);color:var(--text2)
+  padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;
+  background:var(--bg4);color:var(--text2);font-family:var(--body)
 }
 
 /* ALERTS */
@@ -304,7 +326,7 @@ nav{
 }
 .alert-item:last-child{border-bottom:none}
 .alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.alert-text{flex:1;font-size:12px}
+.alert-text{flex:1;font-size:13px;font-family:var(--body)}
 .alert-time{font-size:11px;color:var(--text3)}
 .alert-active{background:rgba(76,255,159,0.08);border:1px solid rgba(76,255,159,0.15);border-radius:6px;padding:2px 8px;font-size:10px;color:var(--up)}
 
@@ -315,9 +337,9 @@ nav{
 .portfolio-stat{
   background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px
 }
-.p-stat-label{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px}
-.p-stat-value{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:4px}
-.p-stat-sub{font-size:12px}
+.p-stat-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:8px;font-family:var(--body)}
+.p-stat-value{font-family:var(--num);font-size:26px;font-weight:700;margin-bottom:4px;letter-spacing:-0.02em}
+.p-stat-sub{font-size:13px;font-family:var(--body);font-weight:500}
 .portfolio-table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden}
 .portfolio-row{
   display:grid;grid-template-columns:2fr 100px 100px 100px 100px;
@@ -378,12 +400,12 @@ nav{
 <nav>
   <div class="nav-logo">Nex<span>Vault</span></div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showPage('market')">Market</button>
-    <button class="nav-tab" onclick="showPage('watchlist')">Watchlist</button>
-    <button class="nav-tab" onclick="showPage('portfolio')">Portfolio</button>
-    <button class="nav-tab" onclick="showPage('news')">News</button>
-    <button class="nav-tab" onclick="showPage('alerts')">Alerts</button>
-    <button class="nav-tab" onclick="showPage('converter')">Convert</button>
+    <button class="nav-tab active" data-page="market" onclick="showPage('market')">📈 Market</button>
+    <button class="nav-tab" data-page="watchlist" onclick="showPage('watchlist')">★ Watchlist</button>
+    <button class="nav-tab" data-page="portfolio" onclick="showPage('portfolio')">💼 Portfolio</button>
+    <button class="nav-tab" data-page="news" onclick="showPage('news')">📰 News</button>
+    <button class="nav-tab" data-page="alerts" onclick="showPage('alerts')">🔔 Alerts</button>
+    <button class="nav-tab" data-page="converter" onclick="showPage('converter')">⇄ Convert</button>
   </div>
   <div class="nav-right">
     <div class="live-badge"><div class="live-dot"></div>Live</div>
@@ -940,7 +962,7 @@ function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
-  document.querySelectorAll('.nav-tab').forEach(t=>{if(t.textContent.toLowerCase()===name||t.getAttribute('onclick')?.includes("'"+name+"'"))t.classList.add('active')});
+  document.querySelectorAll('.nav-tab').forEach(t=>{if(t.dataset.page===name)t.classList.add('active')});
   if(name==='news') renderNews();
   if(name==='alerts') renderAlerts();
 }
