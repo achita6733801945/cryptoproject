@@ -1,20 +1,20 @@
 name: Deploy to GitHub Pages
 
-# trigger workflow ทุกครั้งที่ push เข้า main branch
 on:
   push:
     branches:
       - main
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # deploy ไป GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
