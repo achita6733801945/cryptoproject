@@ -1,27 +1,22 @@
 name: Deploy to GitHub Pages
 
-# trigger workflow ทุกครั้งที่ push เข้า main
 on:
   push:
     branches:
       - main
 
-# ใช้ Node.js 24 เพื่อลด warning
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      # checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # deploy ไป GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./   # root folder ของ repo
+          publish_dir: ./  # root folder ของ repo
