@@ -1,9 +1,8 @@
 pages:
   stage: deploy
-  image: alpine:latest
   script:
     - mkdir -p public
-    - cp *.html public/ || true
+    - cp index.html public/
     - cp *.css public/ || true
     - cp *.js public/ || true
   artifacts:
