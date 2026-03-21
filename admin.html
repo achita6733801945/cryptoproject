@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+</head>
+<body>
+<h1>Admin Dashboard</h1>
+
+<p>กดปุ่มเพื่อ Deploy โค้ดล่าสุดขึ้น GitHub Pages</p>
+
+<button id="deployBtn">Deploy Latest</button>
+<pre id="log"></pre>
+
+<script>
+document.getElementById('deployBtn').onclick = async () => {
+    try {
+        // เรียก deploy.php
+        const res = await fetch('deploy.php');
+        const text = await res.text();
+        document.getElementById('log').innerText = text;
+    } catch (err) {
+        document.getElementById('log').innerText = err;
+    }
+}
+</script>
+</body>
+</html>
