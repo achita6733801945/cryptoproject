@@ -3,20 +3,84 @@
 <head>
 <meta charset="UTF-8">
 <title>Admin Dashboard</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px;
+}
+
+h1 {
+    color: #333;
+}
+
+.container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 400px;
+    text-align: center;
+}
+
+input[type="text"] {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+button {
+    background: #4CAF50;
+    color: #fff;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #45a049;
+}
+
+pre {
+    background: #eee;
+    padding: 15px;
+    border-radius: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+    text-align: left;
+}
+</style>
 </head>
 <body>
+
 <h1>Admin Dashboard</h1>
 
-<p>กดปุ่มเพื่อ Deploy โค้ดล่าสุดขึ้น GitHub Pages</p>
-
-<button id="deployBtn">Deploy Latest</button>
-<pre id="log"></pre>
+<div class="container">
+    <p>ชื่อ Deploy:</p>
+    <input type="text" id="deployName" placeholder="เช่น Release_2026_03_21">
+    
+    <button id="deployBtn">Deploy Latest</button>
+    
+    <h3>Log</h3>
+    <pre id="log">รอการ deploy...</pre>
+</div>
 
 <script>
 document.getElementById('deployBtn').onclick = async () => {
+    const name = document.getElementById('deployName').value || "Unnamed Deploy";
+    
     try {
-        // เรียก deploy.php
-        const res = await fetch('deploy.php');
+        // เรียก deploy.php พร้อมชื่อ deploy เป็น query param
+        const res = await fetch(`deploy.php?name=${encodeURIComponent(name)}`);
         const text = await res.text();
         document.getElementById('log').innerText = text;
     } catch (err) {
@@ -24,5 +88,6 @@ document.getElementById('deployBtn').onclick = async () => {
     }
 }
 </script>
+
 </body>
 </html>
