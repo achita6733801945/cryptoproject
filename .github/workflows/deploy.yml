@@ -2,15 +2,21 @@ name: Deploy to GitHub Pages
 
 on:
   repository_dispatch:
-    types: [deploy]   
+    types: [deploy]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Show deploy name
+        run: echo "Deploy Name: ${{ github.event.client_payload.deploy_name }}"
+
       - name: Deploy to Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.DEPLOY_TOKEN }}
-          publish_dir: ./C:\xampp\htdocs\sys ad   # โฟลเดอร์เว็บของคุณ
+          publish_dir: ./sys ad       # โฟลเดอร์ที่มี index.html
+          destination_branch: gh-pages
