@@ -2,21 +2,15 @@ name: Deploy to GitHub Pages
 
 on:
   repository_dispatch:
-    types: [deploy]
+    types: [deploy]   # ชื่อ event ต้องตรงกับ deploy.php
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Show deploy name
-        run: echo "Deploy Name: ${{ github.event.client_payload.deploy_name }}"
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - uses: actions/checkout@v3
+      - name: Deploy to Pages
+        uses: peaceiris/actions-gh-pages@v6
         with:
           github_token: ${{ secrets.DEPLOY_TOKEN }}
-          publish_dir: ./
+          publish_dir: ./   # โฟลเดอร์เว็บของคุณ
