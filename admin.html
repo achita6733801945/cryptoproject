@@ -18,20 +18,6 @@
 <pre id="log"></pre>
 
 <script>
-async function login() {
-    const res = await fetch('http://localhost:3000/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            user: document.getElementById('user').value,
-            pass: document.getElementById('pass').value
-        })
-    });
-
-    const data = await res.json();
-    alert(data.status);
-}
-
 async function deploy() {
     document.getElementById('log').innerText = "⏳ Deploying...";
 
@@ -41,11 +27,9 @@ async function deploy() {
 
     const data = await res.json();
 
-    if (data.status === 'success') {
-        document.getElementById('log').innerText = "✅ SUCCESS\n" + data.data;
-    } else {
-        document.getElementById('log').innerText = "❌ ERROR\n" + data.data;
-    }
+    // 🔥 โชว์ error จริง
+    document.getElementById('log').innerText =
+        (data.status === 'success' ? "✅ SUCCESS\n" : "❌ ERROR\n") + data.data;
 }
 </script>
 
