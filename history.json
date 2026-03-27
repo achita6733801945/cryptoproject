@@ -1,0 +1,38 @@
+app.post('/deploy', (req, res) => {
+
+    if (!req.session.admin) {
+        return res.status(403).json({ status: 'error', data: 'Forbidden' });
+    }
+
+    const { name, message } = req.body;
+
+    const projectPath = "C:/xampp/htdocs/sys ad";
+    const commitMsg = `${name}: ${message}`;
+
+    exec(`cd "${projectPath}" && git add . && git commit -m "${commitMsg}" && git push origin main`,
+        (error, stdout, stderr) => {
+
+            if (error) {
+                return res.json({ status: 'error', data: stderr });
+            }
+
+            // 🔥 บันทึก history
+            const log = {
+                name,
+                message,
+                time: new Date().toLocaleString()
+            };
+
+            let history = [];
+
+            if (fs.existsSync('history.json')) {
+                history = JSON.parse(fs.readFileSync('history.json'));
+            }
+
+            history.unshift(log); // ล่าสุดขึ้นก่อน
+            fs.writeFileSync('history.json', JSON.stringify(history, null, 2));
+
+            res.json({ status: 'success', data: stdout });
+        }
+    );
+});
