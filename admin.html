@@ -1,198 +1,173 @@
 <!DOCTYPE html>
-<html lang="th">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Admin Panel</title>
+<title>DevOps Panel</title>
 
 <style>
 body {
     font-family: Arial;
-    background: #111;
-    color: #fff;
+    background: #0f172a;
+    color: white;
     text-align: center;
 }
 
+.box {
+    background: #1e293b;
+    padding: 20px;
+    margin: 20px auto;
+    width: 400px;
+    border-radius: 10px;
+}
+
 input, button {
-    padding: 10px;
     margin: 5px;
+    padding: 10px;
+    width: 90%;
+    border-radius: 5px;
     border: none;
-    border-radius: 6px;
 }
 
 button {
-    background: #00ff99;
+    background: #22c55e;
+    color: white;
     cursor: pointer;
+    font-weight: bold;
 }
 
 button:hover {
-    background: #00cc77;
+    background: #16a34a;
 }
 
-.box {
-    background: #222;
-    margin: 20px auto;
-    padding: 20px;
-    width: 80%;
-    border-radius: 10px;
+#status {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.success { color: lightgreen; }
+.fail { color: red; }
+.loading { color: yellow; }
+
+.loader {
+  border: 5px solid #334155;
+  border-top: 5px solid #22c55e;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 10px auto;
+  display: none;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
 }
 </style>
 </head>
 
 <body>
 
-<h1>🚀 Admin Deploy Panel</h1>
+<h1>🚀 DevOps Panel</h1>
 
 <!-- 🔐 LOGIN -->
-<div class="box" id="loginBox">
-    <h2>Login</h2>
+<div id="loginBox" class="box">
+    <h3>Login</h3>
     <input id="user" placeholder="username">
     <input id="pass" type="password" placeholder="password">
-    <br>
     <button onclick="login()">Login</button>
 </div>
 
-<!-- 🔒 PANEL (ซ่อนก่อน) -->
-<div id="panel" style="display:none;">
+<!-- 🚀 ADMIN -->
+<div id="adminBox" class="box" style="display:none;">
+    <h3>Deploy</h3>
 
-    <!-- 🚀 DEPLOY -->
-    <div class="box">
-        <h2>Deploy</h2>
-        <input id="name" placeholder="ชื่อคน deploy">
-        <input id="msg" placeholder="ข้อความ commit">
-        <br>
-        <button onclick="deploy()">🚀 Deploy</button>
-    </div>
+    <input id="nameInput" placeholder="ชื่อคน deploy">
+    <input id="msgInput" placeholder="แก้อะไร">
 
-    <!-- 📊 CONTROL -->
-    <div class="box">
-        <button onclick="loadHistory()">📜 History</button>
-        <button onclick="loadCommits()">📂 Versions</button>
-        <button onclick="logout()">🚪 Logout</button>
-    </div>
+    <button onclick="deploy()">🚀 Deploy</button>
+    <button onclick="openHistory()">📜 History</button>
 
-    <!-- 📦 OUTPUT -->
-    <div class="box" id="output"></div>
+    <div class="loader" id="loader"></div>
 
+    <h3 id="status"></h3>
 </div>
-
 
 <script>
 
 // 🔐 LOGIN
 async function login() {
+    const user = document.getElementById('user').value;
+    const pass = document.getElementById('pass').value;
 
     const res = await fetch('/login', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            username: document.getElementById('user').value,
-            password: document.getElementById('pass').value
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: user, password: pass })
     });
 
     const data = await res.json();
 
     if (data.status === 'success') {
         document.getElementById('loginBox').style.display = 'none';
-        document.getElementById('panel').style.display = 'block';
+        document.getElementById('adminBox').style.display = 'block';
     } else {
-        alert("❌ login ไม่ถูก");
+        alert("❌ Login failed");
     }
 }
 
 
-// 🚪 LOGOUT
-function logout() {
-    location.reload(); // ง่ายสุด รีหน้า = เคลียร์ session ฝั่ง client
-}
-
-
-// 🚀 DEPLOY
+// 🚀 DEPLOY (แก้ bug แล้ว)
 async function deploy() {
 
-    const res = await fetch('/deploy', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            name: document.getElementById('name').value,
-            message: document.getElementById('msg').value
-        })
-    });
+    const name = document.getElementById('nameInput').value;
+    const msg = document.getElementById('msgInput').value;
 
-    const data = await res.json();
+    // ✅ เช็คข้อมูล
+    if (!name || !msg) {
+        alert("⚠️ กรุณากรอกข้อมูลให้ครบ");
+        return;
+    }
 
-    document.getElementById('output').innerHTML =
-        "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+    // 🌀 loading
+    document.getElementById('loader').style.display = "block";
+    document.getElementById('status').innerHTML =
+        "<span class='loading'>⏳ กำลัง Deploy...</span>";
+
+    try {
+        const res = await fetch('/deploy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: name,
+                message: msg
+            })
+        });
+
+        const data = await res.json();
+
+        document.getElementById('loader').style.display = "none";
+
+        if (data.status === 'success') {
+            document.getElementById('status').innerHTML =
+                "<span class='success'>✅ Deploy สำเร็จ!</span>";
+        } else {
+            document.getElementById('status').innerHTML =
+                "<span class='fail'>❌ Deploy ล้มเหลว</span>";
+            console.error(data.data);
+        }
+
+    } catch (err) {
+        document.getElementById('loader').style.display = "none";
+        document.getElementById('status').innerHTML =
+            "<span class='fail'>❌ Error</span>";
+        console.error(err);
+    }
 }
 
 
 // 📜 HISTORY
-async function loadHistory() {
-
-    const res = await fetch('/history');
-    const data = await res.json();
-
-    let html = "<h2>📜 History</h2>";
-
-    data.forEach(h => {
-        html += `
-        <div>
-            👤 ${h.name}<br>
-            📝 ${h.message}<br>
-            ⏰ ${h.time}<br>
-            📊 ${h.status}
-            <hr>
-        </div>
-        `;
-    });
-
-    document.getElementById('output').innerHTML = html;
-}
-
-
-// 📂 COMMITS
-async function loadCommits() {
-
-    const res = await fetch('/commits');
-    const data = await res.json();
-
-    let html = "<h2>📂 Versions</h2>";
-
-    data.forEach(c => {
-        html += `
-        <div>
-            🔹 ${c.hash}<br>
-            👤 ${c.author}<br>
-            📝 ${c.message}<br>
-            ⏰ ${c.date}<br>
-            <button onclick="rollback('${c.hash}')">⏪ Rollback</button>
-            <hr>
-        </div>
-        `;
-    });
-
-    document.getElementById('output').innerHTML = html;
-}
-
-
-// ⏪ ROLLBACK
-async function rollback(hash) {
-
-    if (!confirm("⚠️ ย้อนเวอร์ชันจริงไหม?")) return;
-
-    const res = await fetch('/rollback', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ hash })
-    });
-
-    const data = await res.json();
-
-    if (data.status === 'success') {
-        alert("✅ rollback สำเร็จ");
-    } else {
-        alert("❌ rollback ไม่สำเร็จ");
-    }
+function openHistory() {
+    window.open('/history.html', '_blank');
 }
 
 </script>
