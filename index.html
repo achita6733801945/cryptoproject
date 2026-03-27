@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto X</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07090f;
+  --bg2:#0d1017;
+  --bg3:#131820;
+  --bg4:#1a2030;
+  --border:rgba(255,255,255,0.06);
+  --border2:rgba(255,255,255,0.1);
+  --accent:#c8ff57;
+  --accent-dim:rgba(200,255,87,0.12);
+  --accent2:#57c8ff;
+  --accent3:#ff7557;
+  --text:#e8eaf0;
+  --text2:#7a8394;
+  --text3:#3d4553;
+  --up:#4cff9f;
+  --down:#ff5c5c;
+  --up-bg:rgba(76,255,159,0.1);
+  --down-bg:rgba(255,92,92,0.1);
+  --num:'Inter',sans-serif;
+  --body:'Plus Jakarta Sans',sans-serif;
+
+  /* NAV TAB COLORS */
+  --tab-market:#60a5fa;
+  --tab-market-bg:rgba(96,165,250,0.12);
+  --tab-watchlist:#f472b6;
+  --tab-watchlist-bg:rgba(244,114,182,0.12);
+  --tab-portfolio:#34d399;
+  --tab-portfolio-bg:rgba(52,211,153,0.12);
+  --tab-news:#fb923c;
+  --tab-news-bg:rgba(251,146,60,0.12);
+  --tab-alerts:#a78bfa;
+  --tab-alerts-bg:rgba(167,139,250,0.12);
+  --tab-convert:#38bdf8;
+  --tab-convert-bg:rgba(56,189,248,0.12);
+}
+html{font-size:14px}
+body{background:var(--bg);color:var(--text);font-family:var(--body);overflow-x:hidden;min-height:100vh}
+
+/* GRID BG */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(200,255,87,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(200,255,87,0.025) 1px,transparent 1px);
+  background-size:80px 80px;pointer-events:none;z-index:0
+}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:60px;
+  background:rgba(7,9,15,0.85);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border)
+}
+.nav-logo{font-family:var(--body);font-weight:800;font-size:18px;letter-spacing:-0.02em;color:var(--accent)}
+.nav-logo span{color:var(--text2);font-weight:400}
+.nav-tabs{display:flex;gap:4px}
+.nav-tab{
+  padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;
+  cursor:pointer;border:none;background:transparent;
+  color:var(--text2);transition:all 0.2s;font-family:var(--body);
+  display:flex;align-items:center;gap:6px;letter-spacing:0
+}
+.nav-tab:hover{background:var(--bg3);color:var(--text)}
+.nav-tab[data-page="market"].active{background:var(--tab-market-bg);color:var(--tab-market);border:1px solid rgba(96,165,250,0.25)}
+.nav-tab[data-page="watchlist"].active{background:var(--tab-watchlist-bg);color:var(--tab-watchlist);border:1px solid rgba(244,114,182,0.25)}
+.nav-tab[data-page="portfolio"].active{background:var(--tab-portfolio-bg);color:var(--tab-portfolio);border:1px solid rgba(52,211,153,0.25)}
+.nav-tab[data-page="news"].active{background:var(--tab-news-bg);color:var(--tab-news);border:1px solid rgba(251,146,60,0.25)}
+.nav-tab[data-page="alerts"].active{background:var(--tab-alerts-bg);color:var(--tab-alerts);border:1px solid rgba(167,139,250,0.25)}
+.nav-tab[data-page="converter"].active{background:var(--tab-convert-bg);color:var(--tab-convert);border:1px solid rgba(56,189,248,0.25)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.live-badge{
+  display:flex;align-items:center;gap:6px;padding:5px 12px;
+  border-radius:50px;border:1px solid rgba(76,255,159,0.2);
+  font-size:11px;letter-spacing:0.08em;color:var(--up)
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--up);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
+.refresh-btn{
+  padding:7px 16px;border-radius:8px;background:var(--accent);color:#000;
+  font-family:var(--body);font-size:13px;font-weight:700;
+  border:none;cursor:pointer;transition:all 0.2s
+}
+.refresh-btn:hover{background:#d4ff6a;transform:translateY(-1px)}
+
+/* LAYOUT */
+.app{position:relative;z-index:1;padding-top:60px;display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{
+  width:220px;flex-shrink:0;
+  border-right:1px solid var(--border);
+  padding:24px 0;
+  position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto
+}
+.sidebar-section{margin-bottom:28px;padding:0 16px}
+.sidebar-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;font-weight:600}
+.sidebar-item{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;
+  cursor:pointer;transition:all 0.2s;margin-bottom:2px;border:1px solid transparent
+}
+.sidebar-item:hover{background:var(--bg3);border-color:var(--border)}
+.sidebar-item.active{background:var(--accent-dim);border-color:rgba(200,255,87,0.2)}
+.sidebar-icon{font-size:15px;width:20px;text-align:center}
+.sidebar-text{font-size:13px;font-weight:500;color:var(--text2);font-family:var(--body)}
+.sidebar-item.active .sidebar-text{color:var(--accent)}
+
+/* MAIN */
+.main{flex:1;padding:24px 28px;max-width:calc(100vw - 220px)}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* GLOBAL STATS */
+.global-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px
+}
+.gstat{
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;
+  padding:16px 18px;
+  animation:fadeUp 0.5s ease forwards;opacity:0
+}
+.gstat:nth-child(1){animation-delay:0.05s}
+.gstat:nth-child(2){animation-delay:0.1s}
+.gstat:nth-child(3){animation-delay:0.15s}
+.gstat:nth-child(4){animation-delay:0.2s}
+.gstat-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:8px;font-family:var(--body)}
+.gstat-value{font-family:var(--num);font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-0.02em}
+.gstat-sub{font-size:12px;font-family:var(--body);font-weight:500}
+.gstat-sub.up{color:var(--up)}
+.gstat-sub.down{color:var(--down)}
+
+/* SECTION HEADER */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{
+  font-family:var(--body);font-size:15px;font-weight:700;
+  display:flex;align-items:center;gap:8px
+}
+.section-title::before{
+  content:'';display:block;width:3px;height:16px;
+  background:var(--accent);border-radius:2px
+}
+.section-action{
+  font-size:13px;font-weight:600;color:var(--text2);
+  cursor:pointer;padding:6px 14px;border-radius:8px;
+  border:1px solid var(--border);background:transparent;
+  font-family:var(--body);transition:all 0.2s
+}
+.section-action:hover{border-color:var(--border2);color:var(--text);background:var(--bg3)}
+
+/* COIN TABLE */
+.coin-table-wrap{
+  background:var(--bg2);border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;margin-bottom:24px
+}
+.coin-table-header{
+  display:grid;grid-template-columns:40px 2fr 120px 100px 100px 140px 80px;
+  padding:12px 20px;border-bottom:1px solid var(--border);
+  font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3)
+}
+.coin-row{
+  display:grid;grid-template-columns:40px 2fr 120px 100px 100px 140px 80px;
+  padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.03);
+  align-items:center;cursor:pointer;transition:background 0.15s;
+  animation:fadeUp 0.4s ease forwards;opacity:0
+}
+.coin-row:last-child{border-bottom:none}
+.coin-row:hover{background:rgba(255,255,255,0.025)}
+.coin-rank{font-size:13px;color:var(--text3);text-align:center;font-family:var(--num);font-weight:500}
+.coin-info{display:flex;align-items:center;gap:12px}
+.coin-logo{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--body);font-weight:800;font-size:11px;
+  flex-shrink:0;border:1px solid var(--border2)
+}
+.coin-name-wrap{}
+.coin-symbol{font-weight:700;font-size:14px;font-family:var(--body)}
+.coin-name{font-size:12px;color:var(--text2);margin-top:1px;font-family:var(--body)}
+.coin-price{font-family:var(--num);font-weight:600;font-size:15px;letter-spacing:-0.01em}
+.coin-change{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;
+  font-family:var(--num)
+}
+.coin-change.up{background:var(--up-bg);color:var(--up)}
+.coin-change.down{background:var(--down-bg);color:var(--down)}
+.coin-cap{font-size:13px;color:var(--text2);font-family:var(--num);font-weight:500}
+.sparkline-cell{display:flex;align-items:center}
+.sparkline-svg{width:100px;height:36px}
+.coin-vol{font-size:11px;color:var(--text2)}
+
+/* LOADING */
+.loading-row{
+  display:flex;align-items:center;justify-content:center;
+  padding:40px;color:var(--text2);font-size:13px;gap:10px
+}
+.loading-spin{
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid var(--border2);border-top-color:var(--accent);
+  animation:spin 0.8s linear infinite
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* BOTTOM GRID */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+
+/* CHART PANEL */
+.chart-panel{
+  background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;
+  animation:fadeUp 0.6s ease forwards 0.3s;opacity:0
+}
+.chart-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.chart-panel-title{font-family:var(--body);font-weight:700;font-size:14px}
+.chart-toggle{display:flex;gap:4px}
+.chart-btn{
+  font-size:12px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid var(--border);
+  background:transparent;color:var(--text2);cursor:pointer;
+  font-family:var(--body);transition:all 0.15s
+}
+.chart-btn.active{background:var(--accent-dim);border-color:rgba(200,255,87,0.3);color:var(--accent)}
+
+/* DOMINANCE PANEL */
+.dom-panel{
+  background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;
+  animation:fadeUp 0.6s ease forwards 0.4s;opacity:0
+}
+.dom-item{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.dom-item:last-child{margin-bottom:0}
+.dom-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dom-info{flex:1}
+.dom-name{font-size:13px;font-weight:600;margin-bottom:3px;font-family:var(--body)}
+.dom-bar-wrap{height:5px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.dom-bar{height:100%;border-radius:2px;transition:width 0.8s ease}
+.dom-pct{font-size:13px;font-weight:700;color:var(--text);min-width:44px;text-align:right;font-family:var(--num)}
+
+/* FEAR GREED */
+.fg-panel{
+  background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;
+  display:flex;flex-direction:column;align-items:center
+}
+.fg-gauge{position:relative;width:180px;height:100px;margin:8px 0}
+.fg-value{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;margin-bottom:4px}
+.fg-label{font-size:12px;letter-spacing:0.1em;text-transform:uppercase}
+
+/* CONVERTER */
+.converter-panel{
+  background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;
+  animation:fadeUp 0.6s ease forwards 0.5s;opacity:0
+}
+.converter-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.conv-input{
+  flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+  padding:11px 14px;font-family:var(--num);font-size:15px;font-weight:500;
+  color:var(--text);outline:none;transition:border-color 0.2s;width:100%
+}
+.conv-input:focus{border-color:rgba(200,255,87,0.3)}
+.conv-select{
+  background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+  padding:11px 12px;font-family:var(--body);font-size:13px;font-weight:600;
+  color:var(--text);outline:none;cursor:pointer;min-width:80px
+}
+.conv-arrow{color:var(--text3);font-size:18px;flex-shrink:0}
+.conv-result{
+  background:var(--accent-dim);border:1px solid rgba(200,255,87,0.2);border-radius:8px;
+  padding:16px;text-align:center;margin-top:8px
+}
+.conv-result-val{
+  font-family:var(--num);font-size:26px;font-weight:700;color:var(--accent);letter-spacing:-0.02em
+}
+.conv-result-sub{font-size:12px;color:var(--text2);margin-top:4px;font-family:var(--body)}
+
+/* WATCHLIST */
+.watchlist-panel{
+  background:var(--bg2);border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;margin-bottom:24px;
+  animation:fadeUp 0.5s ease forwards 0.2s;opacity:0
+}
+.watchlist-item{
+  display:flex;align-items:center;gap:14px;padding:14px 20px;
+  border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;
+  transition:background 0.15s
+}
+.watchlist-item:last-child{border-bottom:none}
+.watchlist-item:hover{background:rgba(255,255,255,0.025)}
+.wl-star{color:var(--accent);font-size:14px;margin-right:4px}
+.wl-info{flex:1}
+.wl-name{font-size:14px;font-weight:600;font-family:var(--body)}
+.wl-sym{font-size:12px;color:var(--text2);font-family:var(--body)}
+.wl-right{text-align:right}
+.wl-price{font-family:var(--num);font-size:15px;font-weight:600;letter-spacing:-0.01em}
+.wl-chg{font-size:12px;margin-top:2px;font-family:var(--num);font-weight:600}
+.wl-chg.up{color:var(--up)}
+.wl-chg.down{color:var(--down)}
+.wl-chart{width:80px;height:32px;margin:0 8px}
+
+/* NEWS */
+.news-item{
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;
+  padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:border-color 0.2s
+}
+.news-item:hover{border-color:var(--border2)}
+.news-source{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;font-family:var(--body);font-weight:600}
+.news-title{font-family:var(--body);font-size:15px;font-weight:600;line-height:1.45;margin-bottom:8px;color:var(--text)}
+.news-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text2);font-family:var(--body)}
+.news-tag{
+  padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;
+  background:var(--bg4);color:var(--text2);font-family:var(--body)
+}
+
+/* ALERTS */
+.alert-panel{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px}
+.alert-item{
+  display:flex;align-items:center;gap:12px;padding:12px 0;
+  border-bottom:1px solid rgba(255,255,255,0.04)
+}
+.alert-item:last-child{border-bottom:none}
+.alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.alert-text{flex:1;font-size:13px;font-family:var(--body)}
+.alert-time{font-size:11px;color:var(--text3)}
+.alert-active{background:rgba(76,255,159,0.08);border:1px solid rgba(76,255,159,0.15);border-radius:6px;padding:2px 8px;font-size:10px;color:var(--up)}
+
+/* PORTFOLIO */
+.portfolio-header{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px
+}
+.portfolio-stat{
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px
+}
+.p-stat-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:8px;font-family:var(--body)}
+.p-stat-value{font-family:var(--num);font-size:26px;font-weight:700;margin-bottom:4px;letter-spacing:-0.02em}
+.p-stat-sub{font-size:13px;font-family:var(--body);font-weight:500}
+.portfolio-table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.portfolio-row{
+  display:grid;grid-template-columns:2fr 100px 100px 100px 100px;
+  padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.03);align-items:center
+}
+.portfolio-row.header{
+  background:rgba(255,255,255,0.02);
+  font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3)
+}
+.portfolio-row:last-child{border-bottom:none}
+.p-coin{display:flex;align-items:center;gap:10px}
+.p-pnl{font-weight:600;font-size:13px}
+.p-pnl.up{color:var(--up)}
+.p-pnl.down{color:var(--down)}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:999;
+  background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+  padding:12px 18px;font-size:12px;display:flex;align-items:center;gap:8px;
+  transform:translateY(80px);opacity:0;transition:all 0.3s;pointer-events:none
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-icon{font-size:14px}
+
+/* ANIMATIONS */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.stagger-1{animation-delay:0.05s}
+.stagger-2{animation-delay:0.1s}
+.stagger-3{animation-delay:0.15s}
+.stagger-4{animation-delay:0.2s}
+.stagger-5{animation-delay:0.25s}
+.stagger-6{animation-delay:0.3s}
+.stagger-7{animation-delay:0.35s}
+.stagger-8{animation-delay:0.4s}
+.stagger-9{animation-delay:0.45s}
+.stagger-10{animation-delay:0.5s}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .sidebar{display:none}
+  .main{max-width:100vw;padding:16px}
+  .global-stats{grid-template-columns:repeat(2,1fr)}
+  .bottom-grid{grid-template-columns:1fr}
+  .coin-table-header,.coin-row{grid-template-columns:30px 2fr 100px 80px 80px}
+  .coin-table-header .col-cap,.coin-row .coin-cap,
+  .coin-table-header .col-vol,.coin-row .coin-vol{display:none}
+  .portfolio-header{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Crypto<span> X Version 10000000000 </span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-page="market" onclick="showPage('market')">📈 Market</button>
+    <button class="nav-tab" data-page="watchlist" onclick="showPage('watchlist')">★ Watchlist</button>
+    <button class="nav-tab" data-page="portfolio" onclick="showPage('portfolio')">💼 Portfolio</button>
+    <button class="nav-tab" data-page="news" onclick="showPage('news')">📰 News</button>
+    <button class="nav-tab" data-page="alerts" onclick="showPage('alerts')">🔔 Alerts</button>
+    <button class="nav-tab" data-page="converter" onclick="showPage('converter')">⇄ Convert</button>
+  </div>
+  <div class="nav-right">
+    <div class="live-badge"><div class="live-dot"></div>Live</div>
+    <button class="refresh-btn" onclick="fetchAll()">↻ Refresh</button>
+  </div>
+</nav>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">Overview</div>
+    <div class="sidebar-item active" onclick="showPage('market');setSidebar(this)">
+      <div class="sidebar-icon">◈</div><div class="sidebar-text">Market</div>
+    </div>
+    <div class="sidebar-item" onclick="showPage('watchlist');setSidebar(this)">
+      <div class="sidebar-icon">★</div><div class="sidebar-text">Watchlist</div>
+    </div>
+    <div class="sidebar-item" onclick="showPage('portfolio');setSidebar(this)">
+      <div class="sidebar-icon">◷</div><div class="sidebar-text">Portfolio</div>
+    </div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Tools</div>
+    <div class="sidebar-item" onclick="showPage('converter');setSidebar(this)">
+      <div class="sidebar-icon">⇄</div><div class="sidebar-text">Converter</div>
+    </div>
+    <div class="sidebar-item" onclick="showPage('alerts');setSidebar(this)">
+      <div class="sidebar-icon">◎</div><div class="sidebar-text">Price Alerts</div>
+    </div>
+    <div class="sidebar-item" onclick="showPage('news');setSidebar(this)">
+      <div class="sidebar-icon">◉</div><div class="sidebar-text">News</div>
+    </div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Top Coins</div>
+    <div id="sidebar-coins"></div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- MARKET PAGE -->
+  <div id="page-market" class="page active">
+
+    <!-- GLOBAL STATS -->
+    <div class="global-stats" id="global-stats">
+      <div class="gstat stagger-1" style="animation-delay:0.05s">
+        <div class="gstat-label">Global Market Cap</div>
+        <div class="gstat-value" id="g-mcap">—</div>
+        <div class="gstat-sub" id="g-mcap-chg">Loading...</div>
+      </div>
+      <div class="gstat stagger-2">
+        <div class="gstat-label">24h Volume</div>
+        <div class="gstat-value" id="g-vol">—</div>
+        <div class="gstat-sub up" id="g-vol-sub">—</div>
+      </div>
+      <div class="gstat stagger-3">
+        <div class="gstat-label">BTC Dominance</div>
+        <div class="gstat-value" id="g-btc-dom">—</div>
+        <div class="gstat-sub" id="g-btc-sub">—</div>
+      </div>
+      <div class="gstat stagger-4">
+        <div class="gstat-label">Active Markets</div>
+        <div class="gstat-value" id="g-markets">—</div>
+        <div class="gstat-sub" id="g-coins-sub">— coins tracked</div>
+      </div>
+    </div>
+
+    <!-- COIN TABLE -->
+    <div class="section-header">
+      <div class="section-title">Live Prices</div>
+      <div style="display:flex;gap:8px">
+        <button class="section-action" onclick="sortTable('rank')">Rank</button>
+        <button class="section-action" onclick="sortTable('price_change_percentage_24h')">24h Chg</button>
+        <button class="section-action" onclick="sortTable('market_cap')">Mkt Cap</button>
+      </div>
+    </div>
+    <div class="coin-table-wrap">
+      <div class="coin-table-header">
+        <div>#</div><div>Coin</div><div>Price</div><div>24h %</div>
+        <div>7d %</div><div class="col-cap">Market Cap</div><div class="col-vol">24h Vol</div>
+      </div>
+      <div id="coin-tbody">
+        <div class="loading-row"><div class="loading-spin"></div>Fetching live data...</div>
+      </div>
+    </div>
+
+    <!-- CHARTS + DOMINANCE -->
+    <div class="bottom-grid">
+      <div class="chart-panel">
+        <div class="chart-panel-header">
+          <div class="chart-panel-title">Price Chart</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span id="chart-coin-label" style="font-size:11px;color:var(--text2)">BTC</span>
+            <div class="chart-toggle">
+              <button class="chart-btn active" onclick="setChartRange(1,this)">1D</button>
+              <button class="chart-btn" onclick="setChartRange(7,this)">1W</button>
+              <button class="chart-btn" onclick="setChartRange(30,this)">1M</button>
+            </div>
+          </div>
+        </div>
+        <div style="position:relative;height:200px"><canvas id="priceChart"></canvas></div>
+      </div>
+      <div class="dom-panel">
+        <div class="chart-panel-header"><div class="chart-panel-title">Market Dominance</div></div>
+        <div id="dominance-list"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- WATCHLIST PAGE -->
+  <div id="page-watchlist" class="page">
+    <div class="section-header">
+      <div class="section-title">My Watchlist</div>
+      <div style="font-size:11px;color:var(--text2)">Click to add/remove</div>
+    </div>
+    <div class="watchlist-panel" id="watchlist-body">
+      <div class="loading-row"><div class="loading-spin"></div>Loading...</div>
+    </div>
+  </div>
+
+  <!-- PORTFOLIO PAGE -->
+  <div id="page-portfolio" class="page">
+    <div class="section-header">
+      <div class="section-title">My Portfolio</div>
+      <button class="section-action" onclick="showToast('Portfolio sync updated')">Sync</button>
+    </div>
+    <div class="portfolio-header">
+      <div class="portfolio-stat">
+        <div class="p-stat-label">Total Value</div>
+        <div class="p-stat-value" id="p-total">$0.00</div>
+        <div class="p-stat-sub up" id="p-chg">Loading...</div>
+      </div>
+      <div class="portfolio-stat">
+        <div class="p-stat-label">Today's P&L</div>
+        <div class="p-stat-value" id="p-pnl">$0.00</div>
+        <div class="p-stat-sub" id="p-pnl-pct">—</div>
+      </div>
+      <div class="portfolio-stat">
+        <div class="p-stat-label">Best Performer</div>
+        <div class="p-stat-value" id="p-best">—</div>
+        <div class="p-stat-sub up" id="p-best-chg">—</div>
+      </div>
+    </div>
+    <div style="position:relative;height:240px;margin-bottom:24px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px">
+      <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:16px">Allocation</div>
+      <canvas id="portfolioChart"></canvas>
+    </div>
+    <div class="portfolio-table-wrap">
+      <div class="portfolio-row header">
+        <div>Asset</div><div>Holdings</div><div>Price</div><div>Value</div><div>24h P&L</div>
+      </div>
+      <div id="portfolio-rows"></div>
+    </div>
+  </div>
+
+  <!-- NEWS PAGE -->
+  <div id="page-news" class="page">
+    <div class="section-header"><div class="section-title">Crypto News</div></div>
+    <div id="news-list"></div>
+  </div>
+
+  <!-- ALERTS PAGE -->
+  <div id="page-alerts" class="page">
+    <div class="section-header">
+      <div class="section-title">Price Alerts</div>
+      <button class="section-action" onclick="showToast('Alert saved!')">+ New Alert</button>
+    </div>
+    <div class="alert-panel" id="alerts-body"></div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:16px">
+      <div class="chart-panel-title" style="margin-bottom:16px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px">Set New Alert</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <select class="conv-select" id="alert-coin" style="flex:1">
+          <option value="bitcoin">Bitcoin (BTC)</option>
+          <option value="ethereum">Ethereum (ETH)</option>
+          <option value="solana">Solana (SOL)</option>
+          <option value="binancecoin">BNB</option>
+          <option value="ripple">XRP</option>
+        </select>
+        <select class="conv-select" id="alert-dir">
+          <option>Above</option><option>Below</option>
+        </select>
+        <input type="number" class="conv-input" id="alert-price" placeholder="Target price (USD)" style="flex:2">
+        <button class="refresh-btn" onclick="addAlert()" style="white-space:nowrap">Add Alert</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONVERTER PAGE -->
+  <div id="page-converter" class="page">
+    <div class="section-header"><div class="section-title">Crypto Converter</div></div>
+    <div style="max-width:520px">
+      <div class="converter-panel">
+        <div class="converter-row">
+          <input type="number" class="conv-input" id="conv-amount" value="1" oninput="convertCrypto()">
+          <select class="conv-select" id="conv-from" onchange="convertCrypto()">
+            <option value="bitcoin">BTC</option>
+            <option value="ethereum">ETH</option>
+            <option value="solana">SOL</option>
+            <option value="binancecoin">BNB</option>
+            <option value="ripple">XRP</option>
+            <option value="dogecoin">DOGE</option>
+          </select>
+        </div>
+        <div style="text-align:center;margin:4px 0;color:var(--text3);font-size:18px">↕</div>
+        <div class="converter-row">
+          <select class="conv-select" id="conv-to" onchange="convertCrypto()" style="width:100%">
+            <option value="usd">USD</option>
+            <option value="eur">EUR</option>
+            <option value="thb">THB</option>
+            <option value="bitcoin">BTC</option>
+            <option value="ethereum">ETH</option>
+            <option value="solana">SOL</option>
+          </select>
+        </div>
+        <div class="conv-result" id="conv-result">
+          <div class="conv-result-val" id="conv-val">—</div>
+          <div class="conv-result-sub" id="conv-sub">Enter amount to convert</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px">
+        <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">Quick Rates</div>
+        <div id="quick-rates"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- .main -->
+</div><!-- .app -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✓</span>
+  <span id="toast-msg">Done</span>
+</div>
+
+<script>
+const API = 'https://api.coingecko.com/api/v3';
+let coinData = [];
+let priceChart = null;
+let portfolioChart = null;
+let currentChartCoin = 'bitcoin';
+let currentChartDays = 1;
+let watchlist = ['bitcoin','ethereum','solana','binancecoin','ripple'];
+let userAlerts = [];
+
+const PORTFOLIO = [
+  {id:'bitcoin',symbol:'BTC',holdings:0.042},
+  {id:'ethereum',symbol:'ETH',holdings:0.85},
+  {id:'solana',symbol:'SOL',holdings:12.5},
+  {id:'binancecoin',symbol:'BNB',holdings:2.1},
+];
+
+const COLORS = {bitcoin:'#f7931a',ethereum:'#627eea',solana:'#9945ff',binancecoin:'#f3ba2f',ripple:'#346aa9',dogecoin:'#c2a633',cardano:'#0033ad',polkadot:'#e6007a',avalanche:'#e84142',chainlink:'#2a5ada'};
+const LOGO_COLORS = ['#c8ff57','#57c8ff','#ff7557','#c857ff','#57ffc8','#ffc857'];
+
+const NEWS_DATA = [
+  {source:'Bloomberg Crypto',title:'Bitcoin Eyes $70K as Institutional Inflows Hit Record Levels This Quarter',time:'12 min ago',tags:['BTC','Institutional']},
+  {source:'CoinDesk',title:'Ethereum Layer-2 Networks See 40% Surge in Daily Active Users Following EIP-4844',time:'28 min ago',tags:['ETH','L2']},
+  {source:'The Block',title:'SEC Approves Second Wave of Spot Crypto ETFs Covering Altcoins',time:'1 hr ago',tags:['Regulation','ETF']},
+  {source:'Reuters',title:'Solana DeFi TVL Surpasses $10 Billion for First Time in Network History',time:'2 hrs ago',tags:['SOL','DeFi']},
+  {source:'Decrypt',title:'Central Banks Signal Shift as 14 Countries Launch CBDC Pilots Simultaneously',time:'3 hrs ago',tags:['CBDC','Macro']},
+  {source:'CryptoSlate',title:'Binance Reports Record Trading Volume as Market Volatility Spikes',time:'4 hrs ago',tags:['BNB','Exchange']},
+];
+
+function fmt(n){if(n>=1e12)return'$'+(n/1e12).toFixed(2)+'T';if(n>=1e9)return'$'+(n/1e9).toFixed(2)+'B';if(n>=1e6)return'$'+(n/1e6).toFixed(2)+'M';return'$'+n.toLocaleString()}
+function fmtP(n){return(n>=0?'+':'')+n.toFixed(2)+'%'}
+function fmtPrice(n){if(n>=1000)return'$'+n.toLocaleString(undefined,{maximumFractionDigits:2});if(n>=1)return'$'+n.toFixed(4);return'$'+n.toFixed(6)}
+
+async function fetchGlobal(){
+  try{
+    const r = await fetch(API+'/global');
+    const d = await r.json();
+    const g = d.data;
+    document.getElementById('g-mcap').textContent = fmt(g.total_market_cap.usd);
+    const mc = g.market_cap_change_percentage_24h_usd;
+    const el = document.getElementById('g-mcap-chg');
+    el.textContent = fmtP(mc)+' (24h)';
+    el.className = 'gstat-sub '+(mc>=0?'up':'down');
+    document.getElementById('g-vol').textContent = fmt(g.total_volume.usd);
+    document.getElementById('g-vol-sub').textContent = 'Across all markets';
+    const btcDom = g.market_cap_percentage.btc;
+    document.getElementById('g-btc-dom').textContent = btcDom.toFixed(1)+'%';
+    document.getElementById('g-btc-sub').textContent = 'ETH: '+g.market_cap_percentage.eth.toFixed(1)+'%';
+    document.getElementById('g-markets').textContent = g.markets.toLocaleString();
+    document.getElementById('g-coins-sub').textContent = g.active_cryptocurrencies.toLocaleString()+' coins tracked';
+    renderDominance(g.market_cap_percentage);
+  }catch(e){console.log('Global data error',e)}
+}
+
+async function fetchCoins(){
+  try{
+    const r = await fetch(API+'/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=true&price_change_percentage=7d');
+    coinData = await r.json();
+    renderTable(coinData);
+    renderSidebarCoins(coinData.slice(0,5));
+    renderWatchlist();
+    renderPortfolio();
+    renderConverter();
+    if(priceChart) fetchPriceChart(currentChartCoin, currentChartDays);
+  }catch(e){
+    document.getElementById('coin-tbody').innerHTML='<div class="loading-row">⚠ Could not fetch live data. Check connection.</div>';
+  }
+}
+
+function renderTable(data){
+  const tbody = document.getElementById('coin-tbody');
+  tbody.innerHTML = data.map((c,i)=>{
+    const chg = c.price_change_percentage_24h||0;
+    const chg7 = c.price_change_percentage_7d_in_currency||0;
+    const spark = renderSparkline(c.sparkline_in_7d?.price||[],chg7>=0);
+    return `<div class="coin-row stagger-${Math.min(i+1,10)}" onclick="openCoinChart('${c.id}')">
+      <div class="coin-rank">${c.market_cap_rank}</div>
+      <div class="coin-info">
+        <div class="coin-logo" style="background:${COLORS[c.id]||'#1a2030'};color:${COLORS[c.id]?'#000':'#fff'};font-size:10px">${c.symbol.toUpperCase().slice(0,3)}</div>
+        <div class="coin-name-wrap">
+          <div class="coin-symbol">${c.symbol.toUpperCase()}</div>
+          <div class="coin-name">${c.name}</div>
+        </div>
+      </div>
+      <div class="coin-price">${fmtPrice(c.current_price)}</div>
+      <div><span class="coin-change ${chg>=0?'up':'down'}">${chg>=0?'▲':'▼'} ${Math.abs(chg).toFixed(2)}%</span></div>
+      <div><span class="coin-change ${chg7>=0?'up':'down'}">${chg7>=0?'▲':'▼'} ${Math.abs(chg7).toFixed(2)}%</span></div>
+      <div class="coin-cap col-cap">${fmt(c.market_cap)}</div>
+      <div class="coin-vol col-vol">${spark}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderSparkline(prices,isUp){
+  if(!prices||prices.length<2)return'<svg width="80" height="32"></svg>';
+  const pts = prices.filter((_,i)=>i%Math.ceil(prices.length/20)===0);
+  const mn=Math.min(...pts),mx=Math.max(...pts);
+  const norm=pts.map(p=>((p-mn)/(mx-mn||1))*28+2);
+  const step=80/(pts.length-1);
+  const d=norm.map((y,i)=>`${i===0?'M':'L'}${(i*step).toFixed(1)},${(30-y).toFixed(1)}`).join(' ');
+  const color = isUp?'#4cff9f':'#ff5c5c';
+  return `<svg class="sparkline-svg" viewBox="0 0 80 32"><path d="${d}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+}
+
+function renderDominance(pct){
+  const top = [['BTC',pct.btc,'#f7931a'],['ETH',pct.eth,'#627eea'],['BNB',pct.bnb||2.5,'#f3ba2f'],['SOL',pct.sol||3,'#9945ff'],['Others',100-pct.btc-pct.eth-(pct.bnb||2.5)-(pct.sol||3),'#5a6a7a']];
+  document.getElementById('dominance-list').innerHTML = top.map(([n,v,c])=>`
+    <div class="dom-item">
+      <div class="dom-dot" style="background:${c}"></div>
+      <div class="dom-info">
+        <div class="dom-name">${n}</div>
+        <div class="dom-bar-wrap"><div class="dom-bar" style="width:${v.toFixed(1)}%;background:${c}"></div></div>
+      </div>
+      <div class="dom-pct">${v.toFixed(1)}%</div>
+    </div>`).join('');
+}
+
+async function fetchPriceChart(coinId, days){
+  if(!priceChart){
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    priceChart = new Chart(ctx,{
+      type:'line',
+      data:{labels:[],datasets:[{data:[],borderColor:'#c8ff57',borderWidth:1.5,fill:true,backgroundColor:'rgba(200,255,87,0.06)',pointRadius:0,tension:0.3}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:true,ticks:{color:'#3d4553',font:{size:10},callback:v=>fmtPrice(v)},grid:{color:'rgba(255,255,255,0.04)'}}}}
+    });
+  }
+  try{
+    const r = await fetch(`${API}/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`);
+    const d = await r.json();
+    const skip = Math.max(1,Math.floor(d.prices.length/80));
+    const prices = d.prices.filter((_,i)=>i%skip===0);
+    priceChart.data.labels = prices.map(p=>new Date(p[0]).toLocaleDateString());
+    priceChart.data.datasets[0].data = prices.map(p=>p[1]);
+    const isUp = prices[prices.length-1][1] >= prices[0][1];
+    priceChart.data.datasets[0].borderColor = isUp?'#4cff9f':'#ff5c5c';
+    priceChart.data.datasets[0].backgroundColor = isUp?'rgba(76,255,159,0.06)':'rgba(255,92,92,0.06)';
+    priceChart.update();
+    document.getElementById('chart-coin-label').textContent = coinId.toUpperCase().slice(0,6);
+  }catch(e){}
+}
+
+function setChartRange(days, btn){
+  document.querySelectorAll('.chart-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentChartDays = days;
+  fetchPriceChart(currentChartCoin, days);
+}
+
+function openCoinChart(id){
+  currentChartCoin = id;
+  fetchPriceChart(id, currentChartDays);
+  showToast('Chart: '+id);
+}
+
+function renderSidebarCoins(coins){
+  document.getElementById('sidebar-coins').innerHTML = coins.map(c=>{
+    const chg = c.price_change_percentage_24h||0;
+    return `<div class="sidebar-item" onclick="openCoinChart('${c.id}')">
+      <div class="sidebar-icon" style="font-size:11px;font-weight:700;color:${COLORS[c.id]||'#aaa'}">${c.symbol.toUpperCase().slice(0,3)}</div>
+      <div class="sidebar-text">${fmtPrice(c.current_price)}</div>
+      <div style="font-size:10px;margin-left:auto;color:${chg>=0?'var(--up)':'var(--down)'}">${chg>=0?'+':''}${chg.toFixed(1)}%</div>
+    </div>`;
+  }).join('');
+}
+
+function renderWatchlist(){
+  const wl = coinData.filter(c=>watchlist.includes(c.id));
+  document.getElementById('watchlist-body').innerHTML = wl.map((c,i)=>{
+    const chg = c.price_change_percentage_24h||0;
+    const spark = renderSparkline(c.sparkline_in_7d?.price||[],chg>=0);
+    return `<div class="watchlist-item">
+      <span class="wl-star" onclick="removeWatch('${c.id}',event)" title="Remove">★</span>
+      <div class="wl-info"><div class="wl-name">${c.name}</div><div class="wl-sym">${c.symbol.toUpperCase()}</div></div>
+      <div>${spark}</div>
+      <div class="wl-right">
+        <div class="wl-price">${fmtPrice(c.current_price)}</div>
+        <div class="wl-chg ${chg>=0?'up':'down'}">${chg>=0?'▲':'▼'} ${Math.abs(chg).toFixed(2)}%</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function removeWatch(id, e){
+  e.stopPropagation();
+  watchlist = watchlist.filter(w=>w!==id);
+  renderWatchlist();
+  showToast('Removed from watchlist');
+}
+
+function renderPortfolio(){
+  let total=0, pnl=0;
+  const rows = PORTFOLIO.map(p=>{
+    const coin = coinData.find(c=>c.id===p.id);
+    if(!coin) return null;
+    const val = coin.current_price * p.holdings;
+    const dayChg = (coin.price_change_percentage_24h||0)/100*val;
+    total += val; pnl += dayChg;
+    return {p,coin,val,dayChg};
+  }).filter(Boolean);
+
+  document.getElementById('p-total').textContent = '$'+total.toFixed(2);
+  document.getElementById('p-pnl').textContent = (pnl>=0?'+$':'-$')+Math.abs(pnl).toFixed(2);
+  document.getElementById('p-pnl').className = 'p-stat-value '+(pnl>=0?'up':'down');
+
+  const best = rows.sort((a,b)=>b.coin.price_change_percentage_24h-a.coin.price_change_percentage_24h)[0];
+  if(best){
+    document.getElementById('p-best').textContent = best.coin.symbol.toUpperCase();
+    document.getElementById('p-best-chg').textContent = '+'+best.coin.price_change_percentage_24h.toFixed(2)+'%';
+  }
+
+  const pnlPct = (pnl/total*100);
+  document.getElementById('p-chg').textContent = (pnlPct>=0?'+':'')+pnlPct.toFixed(2)+'% today';
+
+  const sortedRows = [...rows].sort((a,b)=>b.val-a.val);
+  document.getElementById('portfolio-rows').innerHTML = sortedRows.map(({p,coin,val,dayChg})=>`
+    <div class="portfolio-row">
+      <div class="p-coin">
+        <div class="coin-logo" style="width:28px;height:28px;font-size:9px;background:${COLORS[coin.id]||'#1a2030'};color:${COLORS[coin.id]?'#000':'#fff'}">${coin.symbol.toUpperCase().slice(0,3)}</div>
+        <div><div class="coin-symbol">${coin.symbol.toUpperCase()}</div><div class="coin-name">${p.holdings} ${coin.symbol.toUpperCase()}</div></div>
+      </div>
+      <div style="font-size:12px">${p.holdings}</div>
+      <div style="font-size:12px">${fmtPrice(coin.current_price)}</div>
+      <div style="font-size:13px;font-weight:600">$${val.toFixed(2)}</div>
+      <div class="p-pnl ${dayChg>=0?'up':'down'}">${dayChg>=0?'+':'-'}$${Math.abs(dayChg).toFixed(2)}</div>
+    </div>`).join('');
+
+  // Portfolio donut chart
+  const ctx = document.getElementById('portfolioChart');
+  if(portfolioChart) portfolioChart.destroy();
+  portfolioChart = new Chart(ctx,{
+    type:'doughnut',
+    data:{
+      labels:sortedRows.map(r=>r.coin.symbol.toUpperCase()),
+      datasets:[{data:sortedRows.map(r=>r.val),backgroundColor:sortedRows.map(r=>COLORS[r.coin.id]||'#5a6a7a'),borderWidth:0,hoverOffset:6}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'70%'}
+  });
+}
+
+function renderConverter(){
+  document.getElementById('quick-rates').innerHTML = coinData.slice(0,5).map(c=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <span style="color:var(--text2);font-size:12px">1 ${c.symbol.toUpperCase()}</span>
+      <span style="font-weight:600;font-size:13px">${fmtPrice(c.current_price)}</span>
+      <span style="font-size:11px;color:${(c.price_change_percentage_24h||0)>=0?'var(--up)':'var(--down)'}">${fmtP(c.price_change_percentage_24h||0)}</span>
+    </div>`).join('');
+  convertCrypto();
+}
+
+function convertCrypto(){
+  const fromId = document.getElementById('conv-from').value;
+  const toId = document.getElementById('conv-to').value;
+  const amt = parseFloat(document.getElementById('conv-amount').value)||0;
+  const from = coinData.find(c=>c.id===fromId);
+  if(!from){document.getElementById('conv-val').textContent='—';return}
+  let result;
+  const rates = {usd:1,eur:0.92,thb:36.5};
+  if(rates[toId]!==undefined){
+    result = (from.current_price * amt * rates[toId]).toFixed(4);
+    const sym = {usd:'USD',eur:'EUR',thb:'THB'}[toId];
+    document.getElementById('conv-val').textContent = parseFloat(result).toLocaleString()+' '+sym;
+    document.getElementById('conv-sub').textContent = `1 ${from.symbol.toUpperCase()} = ${(from.current_price*rates[toId]).toFixed(2)} ${sym}`;
+  } else {
+    const to = coinData.find(c=>c.id===toId);
+    if(!to){document.getElementById('conv-val').textContent='—';return}
+    result = (from.current_price/to.current_price*amt).toFixed(8);
+    document.getElementById('conv-val').textContent = parseFloat(result).toLocaleString()+' '+to.symbol.toUpperCase();
+    document.getElementById('conv-sub').textContent = `1 ${from.symbol.toUpperCase()} = ${(from.current_price/to.current_price).toFixed(6)} ${to.symbol.toUpperCase()}`;
+  }
+}
+
+function renderNews(){
+  document.getElementById('news-list').innerHTML = NEWS_DATA.map((n,i)=>`
+    <div class="news-item" style="animation:fadeUp 0.5s ease forwards ${i*0.06}s;opacity:0">
+      <div class="news-source">${n.source} · ${n.time}</div>
+      <div class="news-title">${n.title}</div>
+      <div class="news-meta">${n.tags.map(t=>`<span class="news-tag">${t}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+function renderAlerts(){
+  const defaults = [
+    {coin:'BTC',dir:'above',price:72000,active:true},
+    {coin:'ETH',dir:'below',price:3000,active:true},
+    {coin:'SOL',dir:'above',price:200,active:false},
+  ];
+  const all = [...defaults, ...userAlerts];
+  document.getElementById('alerts-body').innerHTML = all.map(a=>`
+    <div class="alert-item">
+      <div class="alert-dot" style="background:${a.active?'var(--up)':'var(--text3)'}"></div>
+      <div class="alert-text">${a.coin} <strong style="color:var(--text)">${a.dir === 'above' ? '>' : '<'} $${Number(a.price).toLocaleString()}</strong></div>
+      ${a.active?'<span class="alert-active">ACTIVE</span>':'<span style="font-size:10px;color:var(--text3)">INACTIVE</span>'}
+    </div>`).join('');
+}
+
+function addAlert(){
+  const coin = document.getElementById('alert-coin').value;
+  const dir = document.getElementById('alert-dir').value.toLowerCase();
+  const price = document.getElementById('alert-price').value;
+  if(!price){showToast('Enter a target price','⚠');return}
+  const sym = {bitcoin:'BTC',ethereum:'ETH',solana:'SOL',binancecoin:'BNB',ripple:'XRP'}[coin];
+  userAlerts.push({coin:sym,dir,price,active:true});
+  renderAlerts();
+  document.getElementById('alert-price').value='';
+  showToast('Alert set for '+sym+' '+dir+' $'+Number(price).toLocaleString());
+}
+
+function sortTable(key){
+  const sorted = [...coinData].sort((a,b)=>key==='rank'?a.market_cap_rank-b.market_cap_rank:(b[key]||0)-(a[key]||0));
+  renderTable(sorted);
+}
+
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t=>{if(t.dataset.page===name)t.classList.add('active')});
+  if(name==='news') renderNews();
+  if(name==='alerts') renderAlerts();
+}
+
+function setSidebar(el){
+  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function showToast(msg, icon='✓'){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  document.getElementById('toast-icon').textContent=icon;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+async function fetchAll(){
+  showToast('Refreshing live data...','↻');
+  await Promise.all([fetchGlobal(), fetchCoins()]);
+  fetchPriceChart(currentChartCoin, currentChartDays);
+}
+
+// AUTO-REFRESH every 60s
+setInterval(fetchAll, 60000);
+
+// INIT
+fetchAll();
+renderNews();
+renderAlerts();
+</script>
+</body>
+</html>

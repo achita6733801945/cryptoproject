@@ -1,0 +1,25 @@
+{
+  "name": "sys-ad",
+  "version": "1.0.0",
+  "description": "- แสดงการใช้งาน Git & GitHub - ใช้ branch / merge / commit history - Deploy ด้วย GitHub Pages",
+  "main": "Node.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/achita6733801945/cryptoproject.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/achita6733801945/cryptoproject/issues"
+  },
+  "homepage": "https://github.com/achita6733801945/cryptoproject#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "express-session": "^1.19.0"
+  }
+}
