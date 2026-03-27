@@ -32,15 +32,35 @@ button {
     background: #22c55e;
     color: white;
     cursor: pointer;
+    font-weight: bold;
 }
 
-.fail { color: red; }
-.success { color: lightgreen; }
+button:hover {
+    background: #16a34a;
+}
 
-#historyBox {
-    max-height: 300px;
-    overflow-y: auto;
-    text-align: left;
+#status {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.success { color: lightgreen; }
+.fail { color: red; }
+.loading { color: yellow; }
+
+.loader {
+  border: 5px solid #334155;
+  border-top: 5px solid #22c55e;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 10px auto;
+  display: none;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
 }
 </style>
 </head>
@@ -49,7 +69,7 @@ button {
 
 <h1>🚀 DevOps Panel</h1>
 
-<!-- LOGIN -->
+<!-- 🔐 LOGIN -->
 <div id="loginBox" class="box">
     <h3>Login</h3>
     <input id="user" placeholder="username">
@@ -57,83 +77,99 @@ button {
     <button onclick="login()">Login</button>
 </div>
 
-<!-- ADMIN -->
+<!-- 🚀 ADMIN -->
 <div id="adminBox" class="box" style="display:none;">
     <h3>Deploy</h3>
 
-    <input id="name" placeholder="ชื่อคน deploy">
-    <input id="msg" placeholder="แก้อะไร">
+    <input id="nameInput" placeholder="ชื่อคน deploy">
+    <input id="msgInput" placeholder="แก้อะไร">
 
     <button onclick="deploy()">🚀 Deploy</button>
-    <button onclick="loadHistory()">📜 History</button>
+    <button onclick="openHistory()">📜 History</button>
+
+    <div class="loader" id="loader"></div>
 
     <h3 id="status"></h3>
-
-    <div id="historyBox"></div>
 </div>
 
 <script>
+
+// 🔐 LOGIN
 async function login() {
+    const user = document.getElementById('user').value;
+    const pass = document.getElementById('pass').value;
+
     const res = await fetch('/login', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            username: user.value,
-            password: pass.value
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: user, password: pass })
     });
 
     const data = await res.json();
 
     if (data.status === 'success') {
-        loginBox.style.display = 'none';
-        adminBox.style.display = 'block';
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('adminBox').style.display = 'block';
     } else {
-        alert("Login failed");
+        alert("❌ Login failed");
     }
 }
 
+
+// 🚀 DEPLOY (แก้ bug แล้ว)
 async function deploy() {
-    const res = await fetch('/deploy', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            name: name.value,
-            message: msg.value
-        })
-    });
 
-    const data = await res.json();
+    const name = document.getElementById('nameInput').value;
+    const msg = document.getElementById('msgInput').value;
 
-    if (data.status === 'success') {
-        status.innerHTML = "<span class='success'>✅ Deploy สำเร็จ</span>";
-    } else {
-        status.innerHTML = "<span class='fail'>❌ Deploy ล้มเหลว</span>";
+    // ✅ เช็คข้อมูล
+    if (!name || !msg) {
+        alert("⚠️ กรุณากรอกข้อมูลให้ครบ");
+        return;
     }
 
-    loadHistory();
+    // 🌀 loading
+    document.getElementById('loader').style.display = "block";
+    document.getElementById('status').innerHTML =
+        "<span class='loading'>⏳ กำลัง Deploy...</span>";
+
+    try {
+        const res = await fetch('/deploy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: name,
+                message: msg
+            })
+        });
+
+        const data = await res.json();
+
+        document.getElementById('loader').style.display = "none";
+
+        if (data.status === 'success') {
+            document.getElementById('status').innerHTML =
+                "<span class='success'>✅ Deploy สำเร็จ!</span>";
+        } else {
+            document.getElementById('status').innerHTML =
+                "<span class='fail'>❌ Deploy ล้มเหลว</span>";
+            console.error(data.data);
+        }
+
+    } catch (err) {
+        document.getElementById('loader').style.display = "none";
+        document.getElementById('status').innerHTML =
+            "<span class='fail'>❌ Error</span>";
+        console.error(err);
+    }
 }
 
-async function loadHistory() {
-    const res = await fetch('/history');
-    const data = await res.json();
 
-    let html = "";
-
-    data.forEach(item => {
-        html += `
-        <div>
-            👤 ${item.name}<br>
-            📝 ${item.message}<br>
-            ⏰ ${item.time}<br>
-            <b class="${item.status}">${item.status}</b>
-            <hr>
-        </div>
-        `;
-    });
-
-    historyBox.innerHTML = html;
+// 📜 HISTORY
+function openHistory() {
+    window.open('/history.html', '_blank');
 }
+
 </script>
 
 </body>

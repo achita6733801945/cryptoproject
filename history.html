@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Deploy History</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+}
+
+.box {
+    background: #1e293b;
+    padding: 20px;
+    margin: 20px auto;
+    width: 500px;
+    border-radius: 10px;
+}
+
+.success { color: lightgreen; }
+.fail { color: red; }
+
+</style>
+</head>
+
+<body>
+
+<h1>📜 Deploy History</h1>
+
+<div id="historyBox" class="box">
+    Loading...
+</div>
+
+<script>
+async function loadHistory() {
+    try {
+        const res = await fetch('/history');
+
+        if (res.status === 403) {
+            document.getElementById('historyBox').innerHTML = "❌ ยังไม่ได้ login";
+            return;
+        }
+
+        const data = await res.json();
+
+        if (data.length === 0) {
+            document.getElementById('historyBox').innerHTML = "⚠️ ยังไม่มีข้อมูล";
+            return;
+        }
+
+        let html = "";
+
+        data.forEach(item => {
+            html += `
+            <div>
+                👤 ${item.name}<br>
+                📝 ${item.message}<br>
+                ⏰ ${item.time}<br>
+                <b class="${item.status}">${item.status}</b>
+                <hr>
+            </div>
+            `;
+        });
+
+        document.getElementById('historyBox').innerHTML = html;
+
+    } catch (err) {
+        console.error(err);
+        document.getElementById('historyBox').innerHTML = "❌ โหลดไม่ได้";
+    }
+}
+
+loadHistory();
+</script>
+
+</body>
+</html>
