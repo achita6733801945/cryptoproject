@@ -113,6 +113,68 @@ app.get('/history', (req, res) => {
         res.json([]);
     }
 });
+// 📂 VERSION LIST (ดู commit)
+app.get('/commits', (req, res) => {
+
+    if (!req.session.admin) {
+        return res.status(403).json([]);
+    }
+
+    exec('git log --pretty=format:"%h|%an|%s|%cd"', (err, stdout) => {
+
+        if (err) {
+            return res.json([]);
+        }
+
+        if (!stdout) {
+            return res.json([]);
+        }
+
+        const commits = stdout.split('\n').map(line => {
+            const [hash, author, message, date] = line.split('|');
+            return { hash, author, message, date };
+        });
+
+        res.json(commits);
+    });
+});
+// ⏪ ROLLBACK VERSION (มี backup กันพัง)
+app.post('/rollback', (req, res) => {
+
+    if (!req.session.admin) {
+        return res.status(403).json({ status: 'fail' });
+    }
+
+    const { hash } = req.body;
+
+    if (!hash) {
+        return res.json({ status: 'fail', data: 'no hash' });
+    }
+
+    // 🔥 backup ก่อน rollback
+    const backup = `git branch backup-${Date.now()}`;
+
+    const cmd = `
+        ${backup} &&
+        git reset --hard ${hash} &&
+        git push origin main --force
+    `;
+
+    exec(cmd, (err, stdout, stderr) => {
+
+        if (err) {
+            return res.json({
+                status: 'fail',
+                data: err.message
+            });
+        }
+
+        res.json({
+            status: 'success',
+            data: "rollback สำเร็จ (มี backup แล้ว)"
+        });
+    });
+});
 
 
 app.listen(3000, () => console.log("Server running http://localhost:3000/admin.html"));

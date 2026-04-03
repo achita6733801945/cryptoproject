@@ -86,10 +86,14 @@ button:hover {
 
     <button onclick="deploy()">🚀 Deploy</button>
     <button onclick="openHistory()">📜 History</button>
+    <button onclick="loadCommits()">📂 Versions</button>
 
     <div class="loader" id="loader"></div>
 
     <h3 id="status"></h3>
+
+    <!-- 📂 VERSION OUTPUT -->
+    <div id="commitBox"></div>
 </div>
 
 <script>
@@ -116,19 +120,17 @@ async function login() {
 }
 
 
-// 🚀 DEPLOY (แก้ bug แล้ว)
+// 🚀 DEPLOY
 async function deploy() {
 
     const name = document.getElementById('nameInput').value;
     const msg = document.getElementById('msgInput').value;
 
-    // ✅ เช็คข้อมูล
     if (!name || !msg) {
         alert("⚠️ กรุณากรอกข้อมูลให้ครบ");
         return;
     }
 
-    // 🌀 loading
     document.getElementById('loader').style.display = "block";
     document.getElementById('status').innerHTML =
         "<span class='loading'>⏳ กำลัง Deploy...</span>";
@@ -137,10 +139,7 @@ async function deploy() {
         const res = await fetch('/deploy', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name: name,
-                message: msg
-            })
+            body: JSON.stringify({ name, message: msg })
         });
 
         const data = await res.json();
@@ -153,14 +152,68 @@ async function deploy() {
         } else {
             document.getElementById('status').innerHTML =
                 "<span class='fail'>❌ Deploy ล้มเหลว</span>";
-            console.error(data.data);
         }
 
     } catch (err) {
         document.getElementById('loader').style.display = "none";
         document.getElementById('status').innerHTML =
             "<span class='fail'>❌ Error</span>";
-        console.error(err);
+    }
+}
+
+
+// 📂 LOAD COMMITS + ปุ่ม rollback
+async function loadCommits() {
+
+    const res = await fetch('/commits');
+    const data = await res.json();
+
+    if (!data.length) {
+        document.getElementById('commitBox').innerHTML =
+            "⚠️ ยังไม่มี commit";
+        return;
+    }
+
+    let html = "<h3>📂 Versions</h3>";
+
+    data.forEach(c => {
+        html += `
+        <div style="margin:10px; padding:10px; background:#0f172a;">
+            🔹 ${c.hash}<br>
+            👤 ${c.author}<br>
+            📝 ${c.message}<br>
+            ⏰ ${c.date}<br>
+            <button onclick="rollback('${c.hash}')">⏪ Rollback</button>
+        </div>
+        `;
+    });
+
+    document.getElementById('commitBox').innerHTML = html;
+}
+
+
+// ⏪ ROLLBACK
+async function rollback(hash) {
+
+    if (!confirm("⚠️ ต้องการย้อนเวอร์ชันนี้จริงไหม?")) return;
+
+    document.getElementById('status').innerHTML =
+        "<span class='loading'>⏳ กำลัง rollback...</span>";
+
+    const res = await fetch('/rollback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hash })
+    });
+
+    const data = await res.json();
+
+    if (data.status === 'success') {
+        document.getElementById('status').innerHTML =
+            "<span class='success'>✅ rollback สำเร็จ</span>";
+    } else {
+        document.getElementById('status').innerHTML =
+            "<span class='fail'>❌ rollback ล้มเหลว</span>";
     }
 }
 
