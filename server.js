@@ -143,10 +143,11 @@ app.post('/rollback', (req, res) => {
         return res.json({ status: 'fail', data: 'no hash' });
     }
 
-  const cmd = `
+ const cmd = `
 git branch backup-${Date.now()} &&
 git reset --hard ${hash} &&
-git commit --allow-empty -m "force rebuild ${Date.now()}" &&
+git add . &&
+git commit --allow-empty -m "rollback rebuild ${Date.now()}" &&
 git push origin main --force
 `;
     exec(cmd, (err, stdout) => {
