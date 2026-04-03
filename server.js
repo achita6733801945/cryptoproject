@@ -8,13 +8,17 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// 🔥 FIX SESSION (ไม่เด้ง logout)
 app.use(session({
     secret: 'secret123',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 1000 * 60 * 60, // 1 ชั่วโมง
+    }
 }));
 
-// serve admin.html
+// serve static
 app.use(express.static(__dirname));
 
 
@@ -31,7 +35,17 @@ app.post('/login', (req, res) => {
 });
 
 
-// 🚀 DEPLOY + บันทึก history
+// 🔥 CHECK LOGIN (ไม่ต้อง login ซ้ำ)
+app.get('/check-login', (req, res) => {
+    if (req.session.admin) {
+        res.json({ status: 'ok' });
+    } else {
+        res.json({ status: 'no' });
+    }
+});
+
+
+// 🚀 DEPLOY + HISTORY
 app.post('/deploy', (req, res) => {
 
     if (!req.session.admin) {
@@ -42,53 +56,39 @@ app.post('/deploy', (req, res) => {
 
     const cmd = `git add . && git commit -m "${name}: ${message}" && git push origin main`;
 
-    exec(cmd, (error, stdout, stderr) => {
+    exec(cmd, (error, stdout) => {
 
-        // 📜 เตรียม log
         const log = {
-            name: name,
-            message: message,
+            name,
+            message,
             time: new Date().toLocaleString(),
             status: error ? "fail" : "success"
         };
 
-        // 📂 อ่าน history เดิม
         let history = [];
 
         try {
             if (fs.existsSync('history.json')) {
                 const file = fs.readFileSync('history.json', 'utf8');
-
-                // 🔥 ป้องกันไฟล์ว่าง
                 history = file ? JSON.parse(file) : [];
             }
-        } catch (e) {
-            console.log("history.json พัง → reset ใหม่");
+        } catch {
             history = [];
         }
 
-        // ➕ เพิ่ม log ใหม่
         history.unshift(log);
-
-        // 💾 บันทึกกลับ
         fs.writeFileSync('history.json', JSON.stringify(history, null, 2));
 
         if (error) {
-            return res.json({
-                status: "fail",
-                data: error.message
-            });
+            return res.json({ status: "fail", data: error.message });
         }
 
-        res.json({
-            status: "success",
-            data: stdout
-        });
+        res.json({ status: "success", data: stdout });
     });
 });
 
 
-// 📜 HISTORY (กันพัง)
+// 📜 HISTORY
 app.get('/history', (req, res) => {
 
     if (!req.session.admin) {
@@ -96,24 +96,20 @@ app.get('/history', (req, res) => {
     }
 
     try {
-        if (!fs.existsSync('history.json')) {
-            return res.json([]);
-        }
+        if (!fs.existsSync('history.json')) return res.json([]);
 
         const file = fs.readFileSync('history.json', 'utf8');
-
         if (!file) return res.json([]);
 
-        const data = JSON.parse(file);
+        res.json(JSON.parse(file));
 
-        res.json(data);
-
-    } catch (err) {
-        console.log("อ่าน history ไม่ได้:", err);
+    } catch {
         res.json([]);
     }
 });
-// 📂 VERSION LIST (ดู commit)
+
+
+// 📂 VERSION LIST
 app.get('/commits', (req, res) => {
 
     if (!req.session.admin) {
@@ -122,13 +118,7 @@ app.get('/commits', (req, res) => {
 
     exec('git log --pretty=format:"%h|%an|%s|%cd"', (err, stdout) => {
 
-        if (err) {
-            return res.json([]);
-        }
-
-        if (!stdout) {
-            return res.json([]);
-        }
+        if (err || !stdout) return res.json([]);
 
         const commits = stdout.split('\n').map(line => {
             const [hash, author, message, date] = line.split('|');
@@ -138,7 +128,9 @@ app.get('/commits', (req, res) => {
         res.json(commits);
     });
 });
-// ⏪ ROLLBACK VERSION (มี backup กันพัง)
+
+
+// ⏪ ROLLBACK + DEPLOY (🔥 ตัวสำคัญ)
 app.post('/rollback', (req, res) => {
 
     if (!req.session.admin) {
@@ -151,16 +143,13 @@ app.post('/rollback', (req, res) => {
         return res.json({ status: 'fail', data: 'no hash' });
     }
 
-    // 🔥 backup ก่อน rollback
-    const backup = `git branch backup-${Date.now()}`;
-
-    const cmd = `
-        ${backup} &&
-        git reset --hard ${hash} &&
-        git push origin main --force
-    `;
-
-    exec(cmd, (err, stdout, stderr) => {
+  const cmd = `
+git branch backup-${Date.now()} &&
+git reset --hard ${hash} &&
+git commit --allow-empty -m "force rebuild ${Date.now()}" &&
+git push origin main --force
+`;
+    exec(cmd, (err, stdout) => {
 
         if (err) {
             return res.json({
@@ -171,10 +160,10 @@ app.post('/rollback', (req, res) => {
 
         res.json({
             status: 'success',
-            data: "rollback สำเร็จ (มี backup แล้ว)"
+            data: "rollback + deploy สำเร็จ"
         });
     });
 });
 
 
-app.listen(3000, () => console.log("Server running http://localhost:3000/admin.html"));
+app.listen(3000, () => console.log("🚀 Server running http://localhost:3000/admin.html"));
