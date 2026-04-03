@@ -18,4 +18,4 @@ app.get('/deploy', (req, res) => {
     });
 });
 
-app.listen(3000, () => console.log('Admin dashboard running on http://localhost:3000/admin'));
+app.listen(3000, () => console.log('Admin dashboard running on http://localhost:3000/admin.html'));
